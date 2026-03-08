@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos - Rovigo Colchões</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">Rovigo Colchões</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="produtos.html">Produtos</a></li>
+                <li><a href="sobre.html">Sobre Nós</a></li>
+                <li><a href="admin/index.html">Admin</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <section class="products-section">
+        <div class="container">
+            <h1>Nossos Produtos</h1>
+            <div id="products-grid" class="product-grid"></div>
+        </div>
+    </section>
+
+    <div id="product-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-body">
+                <img id="modal-image" src="" alt="">
+                <div class="modal-info">
+                    <h2 id="modal-name"></h2>
+                    <p id="modal-description"></p>
+                    <div class="price-container">
+                        <span id="modal-price" class="price"></span>
+                        <span id="modal-promo-price" class="promo-price"></span>
+                    </div>
+                    <div class="product-options">
+                        <div class="option-group">
+                            <label>Cor:</label>
+                            <select id="color-select"></select>
+                        </div>
+                        <div class="option-group">
+                            <label>Tamanho:</label>
+                            <select id="size-select">
+                                <option value="Solteiro">Solteiro</option>
+                                <option value="Casal">Casal</option>
+                                <option value="Queen">Queen</option>
+                                <option value="King">King</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button id="whatsapp-btn" class="btn btn-whatsapp">Falar com Vendedor no WhatsApp</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Rovigo Colchões. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script type="module" src="js/produtos.js"></script>
+</body>
+</html>

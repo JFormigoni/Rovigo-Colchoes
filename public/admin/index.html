@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="login-section" class="admin-login">
+        <div class="login-card">
+            <h1>Painel Administrativo</h1>
+            <form id="login-form">
+                <input type="email" id="email" placeholder="Email" required>
+                <input type="password" id="password" placeholder="Senha" required>
+                <button type="submit" class="btn btn-primary">Entrar</button>
+            </form>
+            <p id="login-error" class="error-message"></p>
+        </div>
+    </div>
+
+    <div id="admin-section" style="display: none;">
+        <nav class="navbar">
+            <div class="container">
+                <div class="logo">Admin - ColchõesTop</div>
+                <button id="logout-btn" class="btn btn-secondary">Sair</button>
+            </div>
+        </nav>
+
+        <div class="container admin-container">
+            <h1>Gerenciar Produtos</h1>
+            
+            <button id="add-product-btn" class="btn btn-primary">Adicionar Novo Produto</button>
+
+            <div id="products-list" class="admin-products-list"></div>
+        </div>
+
+        <div id="product-form-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-form">&times;</span>
+                <h2 id="form-title">Adicionar Produto</h2>
+                <form id="product-form">
+                    <input type="hidden" id="product-id">
+                    <input type="text" id="nome" placeholder="Nome do Produto" required>
+                    <textarea id="descricao" placeholder="Descrição" required></textarea>
+                    <input type="number" id="preco" placeholder="Preço" step="0.01" required>
+                    <input type="number" id="precoPromocional" placeholder="Preço Promocional (opcional)" step="0.01">
+                    
+                    <label>URL da Imagem do Produto:</label>
+                    <input type="url" id="imagem-url" placeholder="https://exemplo.com/imagem.jpg">
+                    <small style="color: #666; display: block; margin-bottom: 10px;">
+                        Cole a URL de uma imagem hospedada online (Imgur, Cloudinary, etc.)
+                    </small>
+                    <img id="preview-image" style="max-width: 200px; display: none; margin-bottom: 15px; border-radius: 5px;">
+                    
+                    <label>Cores Disponíveis (separadas por vírgula):</label>
+                    <input type="text" id="cores" placeholder="Ex: Branco, Azul, Cinza" required>
+                    
+                    <label>Tamanhos Disponíveis:</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" name="tamanho" value="Solteiro"> Solteiro</label>
+                        <label><input type="checkbox" name="tamanho" value="Casal"> Casal</label>
+                        <label><input type="checkbox" name="tamanho" value="Queen"> Queen</label>
+                        <label><input type="checkbox" name="tamanho" value="King"> King</label>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="promocao"> Em Promoção</label>
+                        <label><input type="checkbox" id="destaque"> Destaque na Home</label>
+                        <label><input type="checkbox" id="estoque" checked> Em Estoque</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Salvar Produto</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="../js/admin.js"></script>
+</body>
+</html>

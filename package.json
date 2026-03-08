@@ -1,0 +1,21 @@
+{
+  "name": "loja-colchoes",
+  "version": "1.0.0",
+  "description": "Website completo para loja de colchões com Firebase",
+  "scripts": {
+    "deploy": "firebase deploy",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:rules": "firebase deploy --only firestore:rules,storage:rules",
+    "serve": "firebase serve"
+  },
+  "keywords": [
+    "firebase",
+    "ecommerce",
+    "colchoes"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "firebase": "^12.10.0"
+  }
+}
