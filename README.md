@@ -1,209 +1,263 @@
-# Loja de Colchões - Website Completo
+# Loja de Colchões - React + TypeScript + Supabase
 
-Website completo para loja de colchões com Firebase backend.
+Website moderno e completo para loja de colchões com painel administrativo.
 
-## Tecnologias Utilizadas
+## 🚀 Tecnologias
 
-- HTML5, CSS3, JavaScript (ES6+)
-- Firebase (Firestore, Storage, Hosting, Authentication)
+- **React 18** - Framework UI
+- **TypeScript** - Tipagem estática
+- **Vite** - Build tool ultrarrápido
+- **Tailwind CSS** - Estilização utility-first
+- **Lucide React** - Ícones modernos
+- **Supabase** - Backend completo (Database + Auth)
+- **React Router** - Navegação entre páginas
 
-## Estrutura do Projeto
+## ✨ Funcionalidades
 
-```
-mattress-store/
-├── public/
-│   ├── index.html          # Página inicial
-│   ├── produtos.html       # Lista de produtos
-│   ├── sobre.html          # Sobre a loja
-│   ├── admin/
-│   │   └── index.html      # Painel administrativo
-│   ├── css/
-│   │   └── style.css       # Estilos
-│   └── js/
-│       ├── app.js          # Script da home
-│       ├── produtos.js     # Script de produtos
-│       └── admin.js        # Script do admin
-├── firebase.json           # Configuração do Firebase
-├── firestore.rules         # Regras do Firestore
-├── storage.rules           # Regras do Storage
-└── .firebaserc             # Projeto Firebase
-```
+### Frontend (Público)
 
-## Configuração
+- ✅ **Home** - Banner hero, produtos em destaque, sobre a loja
+- ✅ **Produtos** - Catálogo completo com filtros
+- ✅ **Detalhes do Produto** - Modal com seleção de cor e tamanho
+- ✅ **Integração WhatsApp** - Mensagem automática com dados do produto
+- ✅ **Sobre Nós** - História, missão, visão e valores
+- ✅ **Design Responsivo** - Mobile-first, otimizado para todos os dispositivos
 
-### 1. Criar Projeto no Firebase
+### Painel Admin (Protegido)
 
-1. Acesse [Firebase Console](https://console.firebase.google.com/)
-2. Crie um novo projeto
-3. Ative os seguintes serviços:
-   - Firestore Database
-   - Storage
-   - Authentication (Email/Password)
-   - Hosting
+- ✅ **Login Seguro** - Autenticação via Supabase
+- ✅ **Dashboard** - Lista de todos os produtos
+- ✅ **CRUD Completo** - Criar, editar e deletar produtos
+- ✅ **Upload de Imagens** - Via URL externa (Imgur, Cloudinary)
+- ✅ **Gerenciar Status** - Promoção, destaque, estoque
+- ✅ **Interface Intuitiva** - Formulários validados e feedback visual
 
-### 2. Configurar Credenciais
-
-Edite os arquivos JavaScript e substitua as credenciais do Firebase:
-
-```javascript
-const firebaseConfig = {
-    apiKey: "SUA_API_KEY",
-    authDomain: "SEU_AUTH_DOMAIN",
-    projectId: "SEU_PROJECT_ID",
-    storageBucket: "SEU_STORAGE_BUCKET",
-    messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-    appId: "SEU_APP_ID"
-};
-```
-
-Arquivos a editar:
-- `public/js/app.js`
-- `public/js/produtos.js`
-- `public/js/admin.js`
-
-### 3. Configurar WhatsApp
-
-No arquivo `public/js/produtos.js`, altere o número do WhatsApp:
-
-```javascript
-const WHATSAPP_NUMBER = '5511999999999'; // Formato: código país + DDD + número
-```
-
-### 4. Criar Usuário Admin
-
-No Firebase Console:
-1. Vá em Authentication
-2. Adicione um usuário com email e senha
-3. Use essas credenciais para fazer login no painel admin
-
-### 5. Instalar Firebase CLI
-
-```bash
-npm install -g firebase-tools
-```
-
-### 6. Fazer Login no Firebase
-
-```bash
-firebase login
-```
-
-### 7. Inicializar Projeto
-
-```bash
-firebase init
-```
-
-Selecione:
-- Firestore
-- Storage
-- Hosting
-
-### 8. Atualizar .firebaserc
-
-Edite `.firebaserc` e substitua `"seu-projeto-id"` pelo ID do seu projeto Firebase.
-
-### 9. Deploy das Regras
-
-```bash
-firebase deploy --only firestore:rules
-firebase deploy --only storage:rules
-```
-
-### 10. Deploy do Site
-
-```bash
-firebase deploy --only hosting
-```
-
-## Funcionalidades
-
-### Páginas Públicas
-
-- **Home**: Banner, produtos em destaque, sobre a loja
-- **Produtos**: Lista completa de colchões com filtros
-- **Sobre Nós**: História, missão, visão e valores
-
-### Página de Produto
-
-- Imagem do produto
-- Nome e descrição
-- Preço (com preço promocional se houver)
-- Seleção de cor
-- Seleção de tamanho (Solteiro, Casal, Queen, King)
-- Botão para contato via WhatsApp
-
-### Painel Administrativo
-
-- Login protegido com Firebase Authentication
-- Dashboard de produtos
-- Adicionar novo produto
-- Editar produto existente
-- Excluir produto
-- Upload de imagens para Firebase Storage
-- Marcar produto como:
-  - Promoção
-  - Destaque na home
-  - Fora de estoque
-
-### Banco de Dados (Firestore)
-
-Collection: `produtos`
-
-Campos:
-- `nome` (string)
-- `descricao` (string)
-- `preco` (number)
-- `precoPromocional` (number, opcional)
-- `promocao` (boolean)
-- `destaque` (boolean)
-- `estoque` (boolean)
-- `cores` (array de strings)
-- `tamanhos` (array de strings)
-- `imagem` (string, URL do Firebase Storage)
-
-## Fluxo de Compra
+### Fluxo de Compra
 
 1. Cliente navega pelos produtos
-2. Seleciona um produto de interesse
-3. Escolhe cor e tamanho
+2. Clica em um produto de interesse
+3. Seleciona cor e tamanho desejados
 4. Clica em "Falar com Vendedor no WhatsApp"
-5. Mensagem automática é gerada com:
-   - Nome do produto
-   - Cor selecionada
-   - Tamanho selecionado
-6. Cliente é redirecionado para WhatsApp com a mensagem pronta
+5. Mensagem automática é gerada com todos os detalhes
+6. Cliente é redirecionado para WhatsApp
 
-## Comandos Úteis
+## 📦 Instalação
+
+### Pré-requisitos
+
+- Node.js 18+ instalado
+- Conta no Supabase (gratuita)
+
+### Passo 1: Clone o repositório
 
 ```bash
-# Deploy completo
-firebase deploy
-
-# Deploy apenas do hosting
-firebase deploy --only hosting
-
-# Deploy apenas das regras
-firebase deploy --only firestore:rules,storage:rules
-
-# Testar localmente
-firebase serve
+git clone https://github.com/seu-usuario/loja-colchoes.git
+cd loja-colchoes
 ```
 
-## Responsividade
+### Passo 2: Instale as dependências
 
-O site é totalmente responsivo e otimizado para:
-- Desktop
-- Tablet
-- Mobile
+```bash
+npm install
+```
 
-## Segurança
+### Passo 3: Configure o Supabase
 
-- Leitura pública de produtos
-- Escrita apenas para usuários autenticados
-- Upload de imagens apenas para admins
-- Regras de segurança configuradas no Firestore e Storage
+Siga o guia completo em **[SUPABASE_SETUP.md](./SUPABASE_SETUP.md)**
 
-## Suporte
+Resumo:
+1. Crie um projeto no Supabase
+2. Crie a tabela `produtos`
+3. Configure Row Level Security
+4. Crie um usuário admin
+5. Copie as credenciais
 
-Para dúvidas ou problemas, consulte a [documentação do Firebase](https://firebase.google.com/docs).
+### Passo 4: Configure as variáveis de ambiente
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
+VITE_SUPABASE_URL=https://xxxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGc...
+```
+
+### Passo 5: Execute o projeto
+
+```bash
+npm run dev
+```
+
+Acesse: **http://localhost:5173**
+
+## 🏗️ Estrutura do Projeto
+
+```
+src/
+├── components/          # Componentes reutilizáveis
+│   ├── Layout.tsx      # Layout principal com navbar e footer
+│   ├── Navbar.tsx      # Barra de navegação
+│   ├── Footer.tsx      # Rodapé
+│   ├── ProductCard.tsx # Card de produto
+│   ├── ProductModal.tsx # Modal de detalhes do produto
+│   └── ProductForm.tsx # Formulário de produto (admin)
+├── pages/              # Páginas da aplicação
+│   ├── Home.tsx        # Página inicial
+│   ├── Products.tsx    # Catálogo de produtos
+│   ├── About.tsx       # Sobre nós
+│   ├── Login.tsx       # Login do admin
+│   └── Admin.tsx       # Painel administrativo
+├── lib/                # Configurações e utilitários
+│   ├── supabase.ts     # Cliente Supabase
+│   └── database.types.ts # Tipos TypeScript do banco
+├── App.tsx             # Componente raiz com rotas
+├── main.tsx            # Entry point
+└── index.css           # Estilos globais + Tailwind
+```
+
+## 🎨 Personalização
+
+### Alterar Cores
+
+Edite `tailwind.config.js`:
+
+```javascript
+theme: {
+  extend: {
+    colors: {
+      primary: {
+        // Suas cores aqui
+      },
+    },
+  },
+},
+```
+
+### Configurar WhatsApp
+
+Edite os arquivos:
+- `src/components/ProductModal.tsx` (linha 8)
+- `src/pages/About.tsx` (linha 3)
+
+```typescript
+const WHATSAPP_NUMBER = '5511999999999' // Seu número
+```
+
+### Alterar Logo
+
+Edite `src/components/Navbar.tsx` (linha 13):
+
+```tsx
+<Link to="/" className="text-2xl font-bold">
+  Seu Logo Aqui
+</Link>
+```
+
+## 📱 Hospedagem de Imagens
+
+Como o projeto não usa storage próprio, hospede as imagens em:
+
+- **Imgur** (recomendado): https://imgur.com/upload
+- **Cloudinary**: https://cloudinary.com/
+- **ImgBB**: https://imgbb.com/
+
+Consulte **[HOSPEDAGEM_IMAGENS.md](./HOSPEDAGEM_IMAGENS.md)** para detalhes.
+
+## 🚀 Deploy
+
+### Vercel (Recomendado)
+
+```bash
+npm install -g vercel
+vercel
+```
+
+Configure as variáveis de ambiente no dashboard.
+
+### Netlify
+
+```bash
+npm install -g netlify-cli
+netlify deploy --prod
+```
+
+### Build Manual
+
+```bash
+npm run build
+```
+
+Os arquivos estarão em `dist/`
+
+## 🗄️ Banco de Dados
+
+### Tabela: produtos
+
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| id | uuid | ID único (gerado automaticamente) |
+| created_at | timestamptz | Data de criação |
+| nome | text | Nome do produto |
+| descricao | text | Descrição detalhada |
+| preco | numeric | Preço normal |
+| preco_promocional | numeric | Preço em promoção (opcional) |
+| promocao | boolean | Se está em promoção |
+| destaque | boolean | Se aparece na home |
+| estoque | boolean | Se está disponível |
+| cores | text[] | Array de cores disponíveis |
+| tamanhos | text[] | Array de tamanhos disponíveis |
+| imagem | text | URL da imagem |
+
+## 🔒 Segurança
+
+- ✅ Row Level Security (RLS) habilitado
+- ✅ Leitura pública de produtos
+- ✅ Escrita apenas para usuários autenticados
+- ✅ Senhas criptografadas pelo Supabase
+- ✅ Tokens JWT para autenticação
+
+## 📝 Scripts Disponíveis
+
+```bash
+npm run dev      # Inicia servidor de desenvolvimento
+npm run build    # Build para produção
+npm run preview  # Preview do build
+npm run lint     # Verifica código com ESLint
+```
+
+## 🐛 Problemas Comuns
+
+### Erro: "Invalid API key"
+- Verifique o arquivo `.env`
+- Reinicie o servidor (`npm run dev`)
+
+### Produtos não aparecem
+- Verifique as políticas de RLS no Supabase
+- Abra o console do navegador para ver erros
+
+### Login não funciona
+- Verifique se criou o usuário no Supabase
+- Confirme que o usuário está ativo
+
+## 📚 Documentação
+
+- **[SUPABASE_SETUP.md](./SUPABASE_SETUP.md)** - Configuração completa do Supabase
+- **[HOSPEDAGEM_IMAGENS.md](./HOSPEDAGEM_IMAGENS.md)** - Como hospedar imagens
+- **[PRODUTOS_EXEMPLO.md](./PRODUTOS_EXEMPLO.md)** - Produtos prontos para teste
+
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull requests.
+
+## 📄 Licença
+
+MIT License - veja o arquivo LICENSE para detalhes.
+
+## 🆘 Suporte
+
+- **Documentação Supabase**: https://supabase.com/docs
+- **Documentação React**: https://react.dev/
+- **Documentação Tailwind**: https://tailwindcss.com/docs
+
+---
+
+**Desenvolvido com ❤️ usando React + TypeScript + Supabase**
