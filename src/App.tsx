@@ -5,6 +5,7 @@ import Products from './pages/Products'
 import About from './pages/About'
 import Admin from './pages/Admin'
 import Login from './pages/Login'
+import LandingPage from './pages/LandingPage'
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="produtos" element={<Products />} />
         <Route path="sobre" element={<About />} />
       </Route>
+      <Route path="/landing" element={<LandingPage />} />
       <Route path="/admin/login" element={<Login />} />
       <Route path="/admin" element={<Admin />} />
     </Routes>
