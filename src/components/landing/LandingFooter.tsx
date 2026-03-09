@@ -82,7 +82,7 @@ export default function LandingFooter() {
         </div>
         
         <div className="border-t border-neutral-700 mt-8 pt-8 text-center text-white">
-          <p className="text-white">&copy; 2024 Colchões Premium. Todos os direitos reservados.</p>
+          <p className="text-white">&copy; 2026 Rovigo Colchões. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>

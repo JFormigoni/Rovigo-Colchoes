@@ -43,7 +43,7 @@ export default function LandingNavbar() {
             to="/"
             className="text-2xl font-bold text-neutral-900 hover:text-blue-600 transition-colors"
           >
-            Colchões Premium
+            Rovigo Colchões
           </Link>
 
           {/* Desktop Navigation */}
