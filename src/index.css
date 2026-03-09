@@ -2,58 +2,521 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   DESIGN SYSTEM - E-COMMERCE DE COLCHÕES
+   Paleta: Conforto, Descanso e Elegância
+   ============================================ */
+
 @layer base {
+  
+  * {
+    @apply antialiased;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+  
   body {
-    @apply bg-gray-50 text-gray-900;
+    @apply bg-neutral-50 text-neutral-800;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-neutral-900;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl;
+  }
+  
+  h2 {
+    @apply text-3xl md:text-4xl lg:text-5xl;
+  }
+  
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+  
+  p {
+    @apply text-neutral-600 leading-relaxed;
   }
 }
 
 @layer components {
+  /* ============================================
+     BOTÕES - Design Minimalista e Elegante
+     ============================================ */
+  
   .btn {
-    @apply px-6 py-3 rounded-lg font-medium transition-all duration-200 inline-flex items-center gap-2;
+    @apply inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full font-medium;
+    @apply transition-all duration-300 ease-out;
+    @apply focus:outline-none focus:ring-4 focus:ring-offset-2;
+    letter-spacing: 0.01em;
   }
   
   .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-700 hover:shadow-lg hover:-translate-y-0.5;
+    @apply bg-gradient-to-r from-blue-600 to-blue-700 text-white;
+    @apply hover:from-blue-700 hover:to-blue-800;
+    @apply hover:shadow-xl hover:-translate-y-0.5;
+    @apply focus:ring-blue-300;
   }
   
   .btn-secondary {
-    @apply bg-gray-600 text-white hover:bg-gray-700 hover:shadow-lg hover:-translate-y-0.5;
+    @apply bg-white text-neutral-800 border-2 border-neutral-200;
+    @apply hover:border-neutral-300 hover:bg-neutral-50;
+    @apply hover:shadow-lg hover:-translate-y-0.5;
+    @apply focus:ring-neutral-300;
   }
   
   .btn-whatsapp {
-    @apply bg-green-500 text-white hover:bg-green-600 hover:shadow-lg hover:-translate-y-0.5;
+    @apply bg-gradient-to-r from-green-500 to-green-600 text-white;
+    @apply hover:from-green-600 hover:to-green-700;
+    @apply hover:shadow-xl hover:-translate-y-0.5;
+    @apply focus:ring-green-300;
   }
   
-  .btn-danger {
-    @apply bg-red-600 text-white hover:bg-red-700 hover:shadow-lg hover:-translate-y-0.5;
+  .btn-accent {
+    @apply bg-gradient-to-r from-purple-500 to-purple-600 text-white;
+    @apply hover:from-purple-600 hover:to-purple-700;
+    @apply hover:shadow-xl hover:-translate-y-0.5;
+    @apply focus:ring-purple-300;
   }
+  
+  .btn-ghost {
+    @apply bg-transparent text-neutral-700 hover:bg-neutral-100;
+    @apply hover:shadow-md;
+    @apply focus:ring-neutral-300;
+  }
+  
+  .btn-sm {
+    @apply px-6 py-3 text-sm;
+  }
+  
+  .btn-lg {
+    @apply px-10 py-5 text-lg;
+  }
+  
+  /* ============================================
+     CARDS - Elevação Sutil e Elegante
+     ============================================ */
   
   .card {
-    @apply bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300;
+    @apply bg-white rounded-3xl overflow-hidden shadow-md;
+    @apply transition-all duration-300 ease-out;
   }
   
   .card:hover {
-    @apply shadow-xl -translate-y-1;
+    @apply -translate-y-1 shadow-xl;
   }
   
+  .card-flat {
+    @apply bg-white rounded-2xl border border-neutral-200;
+    @apply transition-all duration-300;
+  }
+  
+  .card-flat:hover {
+    @apply border-neutral-300 shadow-md;
+  }
+  
+  .card-gradient {
+    @apply rounded-3xl overflow-hidden;
+    @apply bg-gradient-to-br from-blue-50 to-purple-50;
+  }
+  
+  /* ============================================
+     INPUTS - Minimalistas e Funcionais
+     ============================================ */
+  
   .input {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all;
+    @apply w-full px-5 py-3.5 rounded-2xl;
+    @apply bg-white border-2 border-neutral-200;
+    @apply text-neutral-800 placeholder-neutral-400;
+    @apply transition-all duration-200;
+    @apply focus:outline-none focus:border-blue-400 focus:ring-4 focus:ring-blue-100;
+  }
+  
+  .input:hover {
+    @apply border-neutral-300;
   }
   
   .textarea {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all resize-y min-h-[100px];
+    @apply input resize-y min-h-[120px];
   }
   
+  .select {
+    @apply input appearance-none cursor-pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2378716c'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.5em 1.5em;
+    padding-right: 3rem;
+  }
+  
+  /* ============================================
+     BADGES - Sutis e Informativos
+     ============================================ */
+  
   .badge {
-    @apply inline-block px-3 py-1 rounded-full text-sm font-medium;
+    @apply inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium;
+    @apply transition-all duration-200;
   }
   
   .badge-promo {
-    @apply bg-red-500 text-white;
+    @apply bg-gradient-to-r from-red-500 to-pink-500 text-white;
+    @apply shadow-md;
+  }
+  
+  .badge-new {
+    @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white;
   }
   
   .badge-out {
-    @apply bg-gray-400 text-white;
+    @apply bg-neutral-200 text-neutral-600;
+  }
+  
+  .badge-success {
+    @apply bg-green-100 text-green-700 border border-green-200;
+  }
+  
+  /* ============================================
+     SEÇÕES - Layout Harmonioso
+     ============================================ */
+  
+  .section {
+    @apply py-16 md:py-24 lg:py-32;
+  }
+  
+  .section-sm {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+  
+  .section-lg {
+    @apply py-20 md:py-32 lg:py-40;
+  }
+  
+  .container-custom {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  /* ============================================
+     HERO SECTION - Impacto Visual
+     ============================================ */
+  
+  .hero-gradient {
+    @apply bg-gradient-to-br from-blue-50 via-orange-50 to-purple-50;
+  }
+  
+  .hero-title {
+    @apply text-5xl md:text-6xl lg:text-7xl font-bold;
+    @apply bg-gradient-to-r from-neutral-900 via-blue-800 to-neutral-900;
+    @apply bg-clip-text text-transparent;
+    line-height: 1.1;
+  }
+  
+  .hero-subtitle {
+    @apply text-xl md:text-2xl text-neutral-600 max-w-2xl;
+  }
+  
+  /* ============================================
+     PRODUTOS - Cards Elegantes
+     ============================================ */
+  
+  .product-card {
+    @apply card cursor-pointer;
+  }
+  
+  .product-card:hover .product-image {
+    @apply scale-105;
+  }
+  
+  .product-card:hover .product-title {
+    @apply text-blue-700;
+  }
+  
+  .product-image-wrapper {
+    @apply relative overflow-hidden bg-neutral-100 aspect-square;
+  }
+  
+  .product-image {
+    @apply w-full h-full object-cover transition-transform duration-500;
+  }
+  
+  .product-badge {
+    @apply absolute top-4 right-4 z-10;
+  }
+  
+  .product-content {
+    @apply p-6 space-y-3;
+  }
+  
+  .product-title {
+    @apply text-xl font-semibold text-neutral-900 transition-colors;
+  }
+  
+  .product-description {
+    @apply text-sm text-neutral-600 line-clamp-2;
+  }
+  
+  .product-price {
+    @apply text-2xl font-bold text-blue-700;
+  }
+  
+  .product-price-old {
+    @apply text-lg text-neutral-400 line-through;
+  }
+  
+  /* ============================================
+     BENEFÍCIOS - Ícones e Textos
+     ============================================ */
+  
+  .benefit-card {
+    @apply card-flat p-8 text-center space-y-4;
+    @apply hover:bg-gradient-to-br hover:from-blue-50 hover:to-purple-50;
+  }
+  
+  .benefit-icon {
+    @apply w-16 h-16 mx-auto rounded-2xl;
+    @apply bg-gradient-to-br from-blue-100 to-purple-100;
+    @apply flex items-center justify-center;
+    @apply text-blue-700 text-3xl;
+  }
+  
+  .benefit-title {
+    @apply text-lg font-semibold text-neutral-900;
+  }
+  
+  .benefit-description {
+    @apply text-sm text-neutral-600;
+  }
+  
+  /* ============================================
+     DEPOIMENTOS - Social Proof
+     ============================================ */
+  
+  .testimonial-card {
+    @apply card p-8 space-y-6;
+    @apply h-full min-h-[320px] flex flex-col;
+  }
+  
+  .testimonial-stars {
+    @apply flex gap-1 text-yellow-400 text-xl;
+  }
+  
+  .testimonial-text {
+    @apply text-neutral-700 italic leading-relaxed flex-1;
+  }
+  
+  .testimonial-author {
+    @apply flex items-center gap-4;
+  }
+  
+  .testimonial-avatar {
+    @apply w-12 h-12 rounded-full bg-gradient-to-br from-blue-200 to-purple-200;
+    @apply flex items-center justify-center text-blue-700 font-semibold;
+  }
+  
+  .testimonial-name {
+    @apply font-semibold text-neutral-900;
+  }
+  
+  .testimonial-role {
+    @apply text-sm text-neutral-500;
+  }
+  
+  /* ============================================
+     BANNER PROMOCIONAL - Destaque
+     ============================================ */
+  
+  .promo-banner {
+    @apply overflow-hidden;
+    @apply bg-gradient-to-br from-blue-600 to-purple-600;
+  }
+  
+  .promo-content {
+    @apply p-8 md:p-12 text-center text-white space-y-4;
+  }
+  
+  .promo-title {
+    @apply text-3xl md:text-4xl font-bold text-white;
+  }
+  
+  .promo-subtitle {
+    @apply text-lg md:text-xl opacity-90 text-white;
+  }
+  
+  /* ============================================
+     FOOTER - Minimalista e Informativo
+     ============================================ */
+  
+  .footer {
+    @apply bg-neutral-900 text-white;
+  }
+  
+  .footer-link {
+    @apply hover:text-neutral-300 transition-colors duration-200;
+  }
+  
+  .footer-social {
+    @apply w-10 h-10 rounded-full bg-neutral-800;
+    @apply flex items-center justify-center;
+    @apply hover:bg-blue-600 transition-all duration-300;
+    @apply hover:-translate-y-1;
+  }
+  
+  /* ============================================
+     FLOATING WHATSAPP - Sempre Visível
+     ============================================ */
+  
+  .floating-whatsapp {
+    @apply fixed bottom-6 right-6 z-50;
+    @apply w-16 h-16 rounded-full;
+    @apply bg-gradient-to-br from-green-500 to-green-600;
+    @apply flex items-center justify-center;
+    @apply text-white text-3xl;
+    @apply shadow-2xl hover:shadow-green-500/50;
+    @apply hover:scale-110 transition-all duration-300;
+    @apply cursor-pointer;
+  }
+  
+  .floating-whatsapp::before {
+    content: '';
+    @apply absolute inset-0 rounded-full;
+    @apply bg-green-500 animate-ping opacity-75;
+  }
+  
+  /* ============================================
+     NAVBAR - Navegação Fixa
+     ============================================ */
+  
+  .navbar {
+    @apply fixed top-0 left-0 right-0 z-50;
+    @apply bg-white shadow-md;
+    @apply transition-all duration-300;
+  }
+  
+  .navbar-link {
+    @apply text-neutral-700 hover:text-blue-600;
+    @apply transition-colors duration-200;
+    @apply font-medium;
+  }
+  
+  /* ============================================
+     ANIMAÇÕES SUAVES
+     ============================================ */
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes slideInRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out;
+  }
+  
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out;
+  }
+  
+  .animate-slide-in-right {
+    animation: slideInRight 0.6s ease-out;
+  }
+  
+  /* ============================================
+     UTILIDADES CUSTOMIZADAS
+     ============================================ */
+  
+  .text-gradient {
+    @apply bg-gradient-to-r from-blue-600 to-purple-600;
+    @apply bg-clip-text text-transparent;
+  }
+  
+  .bg-pattern {
+    background-image: 
+      radial-gradient(circle at 20% 50%, rgba(168, 85, 247, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(8, 145, 230, 0.05) 0%, transparent 50%);
+  }
+  
+  .glass-effect {
+    @apply bg-white/80 backdrop-blur-lg border border-white/20;
   }
 }
+
+/* ============================================
+   RESPONSIVIDADE - Mobile First
+   ============================================ */
+
+@media (max-width: 768px) {
+  .hero-title {
+    @apply text-4xl;
+  }
+  
+  .section {
+    @apply py-12;
+  }
+  
+  .btn {
+    @apply px-6 py-3 text-sm;
+  }
+}
+
+/* ============================================
+   ACESSIBILIDADE
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.focus-visible:focus {
+  @apply outline-none ring-4 ring-blue-300 ring-offset-2;
+}
+
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }

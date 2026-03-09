@@ -34,22 +34,22 @@ export default function ProductCardLanding({ product }: ProductCardLandingProps)
   const stars = Array.from({ length: 5 }, (_, index) => index + 1)
 
   return (
-    <div className="card flex flex-col h-full">
+    <div className="product-card">
       {/* Product Image with lazy loading and error fallback */}
-      <div className="relative w-full h-64 bg-gray-200">
+      <div className="product-image-wrapper">
         <img
           src={imageError ? 'https://via.placeholder.com/400x300?text=Imagem+Indisponível' : product.image}
           alt={product.name}
           loading="lazy"
           onError={handleImageError}
-          className="w-full h-full object-cover"
+          className="product-image"
         />
       </div>
 
       {/* Product Content */}
-      <div className="p-6 flex flex-col flex-grow">
+      <div className="product-content">
         {/* Product Name */}
-        <h3 className="text-xl font-semibold mb-2 text-gray-900">
+        <h3 className="product-title">
           {product.name}
         </h3>
 
@@ -67,13 +67,13 @@ export default function ProductCardLanding({ product }: ProductCardLandingProps)
               aria-hidden="true"
             />
           ))}
-          <span className="ml-2 text-sm text-gray-600">
+          <span className="ml-2 text-sm text-neutral-600">
             ({product.rating}/5)
           </span>
         </div>
 
         {/* Product Description */}
-        <p className="text-gray-600 mb-4 line-clamp-3 flex-grow">
+        <p className="product-description mb-4">
           {product.description}
         </p>
 
@@ -81,7 +81,7 @@ export default function ProductCardLanding({ product }: ProductCardLandingProps)
         {product.highlights && product.highlights.length > 0 && (
           <ul className="mb-4 space-y-1">
             {product.highlights.slice(0, 3).map((highlight, index) => (
-              <li key={index} className="text-sm text-gray-700 flex items-start">
+              <li key={index} className="text-sm text-neutral-700 flex items-start">
                 <span className="text-blue-600 mr-2">✓</span>
                 <span>{highlight}</span>
               </li>

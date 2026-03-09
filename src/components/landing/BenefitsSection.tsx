@@ -26,12 +26,12 @@ export default function BenefitsSection() {
   ]
 
   return (
-    <section className="py-16 px-4 bg-gray-50">
-      <div className="max-w-7xl mx-auto">
-        <h2 className="text-4xl font-bold text-center mb-4 text-gray-900">
+    <section className="section bg-neutral-50">
+      <div className="container-custom">
+        <h2 className="text-4xl font-bold text-center mb-4 text-neutral-900">
           Por que escolher nossos colchões?
         </h2>
-        <p className="text-center text-gray-600 mb-12 text-lg">
+        <p className="text-center text-neutral-600 mb-12 text-lg">
           Qualidade e conforto que transformam suas noites
         </p>
         

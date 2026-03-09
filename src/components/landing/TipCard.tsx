@@ -12,16 +12,16 @@ interface TipCardProps {
 
 export default function TipCard({ tip }: TipCardProps) {
   return (
-    <div className="flex flex-col items-center text-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
-      <div className="text-blue-600 mb-4">
+    <div className="card-flat p-6 text-center space-y-4">
+      <div className="text-blue-600 mx-auto w-16 h-16 flex items-center justify-center">
         {tip.icon}
       </div>
       
-      <h3 className="text-xl font-semibold mb-3 text-gray-900">
+      <h3 className="text-xl font-semibold text-neutral-900">
         {tip.title}
       </h3>
       
-      <p className="text-gray-600 leading-relaxed">
+      <p className="text-neutral-600 leading-relaxed">
         {tip.description}
       </p>
     </div>

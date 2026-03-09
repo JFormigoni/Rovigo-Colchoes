@@ -21,9 +21,9 @@ export default function TestimonialCard({ testimonial }: TestimonialCardProps) {
   const { name, avatar, rating, text } = testimonial
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 flex flex-col h-full">
+    <div className="testimonial-card">
       {/* Customer Info Section */}
-      <div className="flex items-center gap-4 mb-4">
+      <div className="testimonial-author">
         {/* Avatar */}
         <img
           src={avatar}
@@ -34,16 +34,16 @@ export default function TestimonialCard({ testimonial }: TestimonialCardProps) {
         
         {/* Name and Rating */}
         <div className="flex-1">
-          <h3 className="font-semibold text-lg text-gray-900">{name}</h3>
+          <h3 className="testimonial-name">{name}</h3>
           
           {/* Star Rating */}
-          <div className="flex gap-1 mt-1" aria-label={`Rating: ${rating} out of 5 stars`}>
+          <div className="testimonial-stars" aria-label={`Rating: ${rating} out of 5 stars`}>
             {[1, 2, 3, 4, 5].map((star) => (
               <Star
                 key={star}
                 className={`w-5 h-5 ${
                   star <= rating
-                    ? 'fill-yellow-400 text-yellow-400'
+                    ? 'fill-current'
                     : 'fill-gray-200 text-gray-200'
                 }`}
                 data-testid="star-icon"
@@ -54,7 +54,7 @@ export default function TestimonialCard({ testimonial }: TestimonialCardProps) {
       </div>
 
       {/* Testimonial Text */}
-      <p className="text-gray-700 leading-relaxed flex-1">
+      <p className="testimonial-text">
         "{text}"
       </p>
     </div>

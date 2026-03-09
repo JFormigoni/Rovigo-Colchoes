@@ -18,18 +18,18 @@ export default function FinalCTASection() {
   }
 
   return (
-    <section className="py-20 px-4 bg-gray-50">
-      <div className="max-w-3xl mx-auto text-center">
-        <h2 className="text-5xl font-bold mb-6 text-gray-900">
+    <section className="section-lg bg-neutral-50">
+      <div className="container-custom text-center">
+        <h2 className="text-5xl font-bold mb-6 text-neutral-900">
           Pronto para dormir melhor?
         </h2>
-        <p className="text-xl text-gray-600 mb-8">
+        <p className="text-xl text-neutral-600 mb-8 max-w-2xl mx-auto">
           Fale com nossos especialistas e encontre o colchão perfeito para você
         </p>
         
         <button 
           onClick={handleWhatsAppClick} 
-          className="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white font-semibold px-10 py-4 rounded-lg text-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+          className="btn btn-whatsapp btn-lg"
           aria-label="Falar com especialista no WhatsApp"
         >
           <MessageCircle className="w-7 h-7" />

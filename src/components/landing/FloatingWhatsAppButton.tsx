@@ -44,14 +44,13 @@ export default function FloatingWhatsAppButton() {
   return (
     <button
       onClick={handleClick}
-      className={`fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-2xl transition-all duration-300 z-50 flex items-center justify-center ${
+      className={`floating-whatsapp ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'
       }`}
-      style={{ minWidth: '56px', minHeight: '56px' }}
       aria-label="Falar no WhatsApp"
       title="Falar no WhatsApp"
     >
-      <MessageCircle className="w-8 h-8" />
+      <MessageCircle className="w-8 h-8 relative z-10" />
     </button>
   )
 }

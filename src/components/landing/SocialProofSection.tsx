@@ -1,10 +1,12 @@
+import { useState, useEffect } from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import TestimonialCard from './TestimonialCard'
 import type { Testimonial } from '@/types/landing'
 
 /**
  * Social Proof section component for landing page
  * 
- * Displays customer testimonials to build trust and credibility.
+ * Displays customer testimonials in a carousel format.
  * 
  * Validates Requirements:
  * - 4.1: Display multiple testimonials (minimum 3)
@@ -14,6 +16,9 @@ import type { Testimonial } from '@/types/landing'
  * - 9.3: Multi-column layout on desktop (>= 768px)
  */
 export default function SocialProofSection() {
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [itemsPerView, setItemsPerView] = useState(1)
+
   // Array of customer testimonials with realistic data
   const testimonials: Testimonial[] = [
     {
@@ -46,25 +51,108 @@ export default function SocialProofSection() {
     }
   ]
 
+  // Detectar tamanho da tela e ajustar items por view
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setItemsPerView(3)
+      } else if (window.innerWidth >= 768) {
+        setItemsPerView(2)
+      } else {
+        setItemsPerView(1)
+      }
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  // Auto-play do carrossel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      handleNext()
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [currentIndex, itemsPerView])
+
+  const maxIndex = Math.max(0, testimonials.length - itemsPerView)
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev === 0 ? maxIndex : prev - 1))
+  }
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1))
+  }
+
   return (
-    <section className="py-16 px-4 bg-blue-50" data-testid="social-proof-section">
-      <div className="max-w-7xl mx-auto">
+    <section className="section card-gradient" data-testid="social-proof-section">
+      <div className="container-custom">
         {/* Section Title */}
-        <h2 className="text-4xl font-bold text-center mb-4 text-gray-900">
+        <h2 className="text-4xl font-bold text-center mb-4 text-neutral-900">
           O que nossos clientes dizem
         </h2>
-        <p className="text-center text-gray-600 mb-12 text-lg">
+        <p className="text-center text-neutral-600 mb-12 text-lg">
           Milhares de pessoas já melhoraram seu sono
         </p>
 
-        {/* Responsive Grid: 1 col mobile, 2 cols tablet, 3 cols desktop */}
-        <div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-          data-testid="testimonials-grid"
-        >
-          {testimonials.map((testimonial) => (
-            <TestimonialCard key={testimonial.id} testimonial={testimonial} />
-          ))}
+        {/* Carousel Container */}
+        <div className="relative">
+          {/* Carousel Track */}
+          <div className="overflow-hidden px-4 py-4">
+            <div 
+              className="flex transition-transform duration-500 ease-out gap-8"
+              style={{ 
+                transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)` 
+              }}
+              data-testid="testimonials-grid"
+            >
+              {testimonials.map((testimonial) => (
+                <div 
+                  key={testimonial.id}
+                  className="flex-shrink-0"
+                  style={{ width: `calc(${100 / itemsPerView}% - ${(itemsPerView - 1) * 2}rem / ${itemsPerView})` }}
+                >
+                  <TestimonialCard testimonial={testimonial} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Navigation Buttons */}
+          <button
+            onClick={handlePrev}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10"
+            aria-label="Depoimento anterior"
+          >
+            <ChevronLeft className="w-6 h-6 text-neutral-900" />
+          </button>
+
+          <button
+            onClick={handleNext}
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10"
+            aria-label="Próximo depoimento"
+          >
+            <ChevronRight className="w-6 h-6 text-neutral-900" />
+          </button>
+
+          {/* Indicators */}
+          <div className="flex justify-center gap-2 mt-8">
+            {Array.from({ length: maxIndex + 1 }).map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === currentIndex 
+                    ? 'bg-blue-600 w-8' 
+                    : 'bg-neutral-300 hover:bg-neutral-400'
+                }`}
+                aria-label={`Ir para slide ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>

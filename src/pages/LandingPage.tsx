@@ -7,6 +7,7 @@ import PromotionalBanner from '@/components/landing/PromotionalBanner'
 import FinalCTASection from '@/components/landing/FinalCTASection'
 import LandingFooter from '@/components/landing/LandingFooter'
 import FloatingWhatsAppButton from '@/components/landing/FloatingWhatsAppButton'
+import LandingNavbar from '@/components/landing/LandingNavbar'
 
 /**
  * Landing Page component for mattress sales
@@ -22,11 +23,22 @@ import FloatingWhatsAppButton from '@/components/landing/FloatingWhatsAppButton'
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white">
-      <HeroSection />
-      <BenefitsSection />
-      <ProductsSection />
-      <SocialProofSection />
-      <EducationalSection />
+      <LandingNavbar />
+      <div id="hero">
+        <HeroSection />
+      </div>
+      <div id="beneficios">
+        <BenefitsSection />
+      </div>
+      <div id="produtos">
+        <ProductsSection />
+      </div>
+      <div id="depoimentos">
+        <SocialProofSection />
+      </div>
+      <div id="dicas">
+        <EducationalSection />
+      </div>
       <PromotionalBanner />
       <FinalCTASection />
       <LandingFooter />

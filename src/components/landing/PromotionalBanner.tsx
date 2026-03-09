@@ -17,37 +17,37 @@ export default function PromotionalBanner() {
 
   return (
     <section 
-      className="py-16 px-4 bg-gradient-to-r from-blue-600 to-blue-800 text-white"
+      className="section promo-banner"
       aria-labelledby="promo-heading"
     >
-      <div className="max-w-4xl mx-auto text-center">
+      <div className="promo-content">
         <h2 
           id="promo-heading"
-          className="text-4xl font-bold mb-6"
+          className="promo-title"
         >
           Oferta Especial
         </h2>
         
-        <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-8">
+        <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-8 text-white">
           <div className="flex items-center gap-3">
-            <Truck className="w-8 h-8" aria-hidden="true" />
-            <span className="text-xl">Frete Grátis</span>
+            <Truck className="w-8 h-8 text-white" aria-hidden="true" />
+            <span className="text-xl text-white">Frete Grátis</span>
           </div>
           
           <div className="flex items-center gap-3">
-            <Tag className="w-8 h-8" aria-hidden="true" />
-            <span className="text-xl">Descontos Especiais</span>
+            <Tag className="w-8 h-8 text-white" aria-hidden="true" />
+            <span className="text-xl text-white">Descontos Especiais</span>
           </div>
           
           <div className="flex items-center gap-3">
-            <Moon className="w-8 h-8" aria-hidden="true" />
-            <span className="text-xl">100 Noites de Teste</span>
+            <Moon className="w-8 h-8 text-white" aria-hidden="true" />
+            <span className="text-xl text-white">100 Noites de Teste</span>
           </div>
         </div>
         
         <button 
           onClick={handleWhatsAppClick}
-          className="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white font-semibold text-lg px-8 py-4 rounded-lg shadow-lg transition-colors duration-200 focus:outline-none focus:ring-4 focus:ring-green-300"
+          className="btn btn-whatsapp btn-lg"
           aria-label="Falar no WhatsApp sobre promoções"
         >
           <MessageCircle className="w-6 h-6" aria-hidden="true" />

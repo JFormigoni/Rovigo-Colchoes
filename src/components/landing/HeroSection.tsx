@@ -1,9 +1,11 @@
-import { MessageCircle } from 'lucide-react'
-import { openWhatsAppWithTemplate } from '@/lib/whatsapp'
+import { ArrowRight } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 export default function HeroSection() {
-  const handleWhatsAppClick = () => {
-    openWhatsAppWithTemplate('hero')
+  const navigate = useNavigate()
+
+  const handleProductsClick = () => {
+    navigate('/produtos')
   }
 
   return (
@@ -13,26 +15,26 @@ export default function HeroSection() {
         backgroundImage: 'url(https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=2070&auto=format&fit=crop)'
       }}
     >
-      {/* Overlay for text legibility */}
+      {/* Overlay escuro suave para legibilidade */}
       <div className="absolute inset-0 bg-black/40" />
       
-      {/* Content */}
-      <div className="relative z-10 max-w-4xl mx-auto px-4 text-center text-white">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+      {/* Conteúdo */}
+      <div className="relative z-10 container-custom text-center">
+        <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-white drop-shadow-2xl">
           Durma Melhor, Viva Melhor
         </h1>
         
-        <p className="text-xl md:text-2xl mb-8 text-gray-100">
+        <p className="text-xl md:text-2xl mb-10 max-w-3xl mx-auto text-white/95 drop-shadow-lg font-light">
           Conforto excepcional, tecnologia avançada e garantia de qualidade para suas noites de sono perfeitas
         </p>
         
         <button
-          onClick={handleWhatsAppClick}
-          className="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-4 rounded-lg text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-          aria-label="Falar com um vendedor no WhatsApp"
+          onClick={handleProductsClick}
+          className="btn btn-primary btn-lg shadow-2xl"
+          aria-label="Ver produtos"
         >
-          <MessageCircle className="w-6 h-6" />
-          Falar com um vendedor no WhatsApp
+          Ver Produtos
+          <ArrowRight className="w-6 h-6" />
         </button>
       </div>
     </section>

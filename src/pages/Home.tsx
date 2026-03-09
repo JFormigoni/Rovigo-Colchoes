@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Sparkles } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import type { Produto } from '@/lib/database.types'
 import ProductCard from '@/components/ProductCard'
@@ -21,6 +21,7 @@ export default function Home() {
         .eq('destaque', true)
         .eq('estoque', true)
         .order('created_at', { ascending: false })
+        .limit(6)
 
       if (error) throw error
       setFeaturedProducts(data || [])
@@ -34,61 +35,92 @@ export default function Home() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-purple-600 to-purple-800 text-white py-24 px-4">
-        <div className="max-w-7xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+      <section 
+        className="relative min-h-[80vh] flex items-center justify-center bg-cover bg-center"
+        style={{
+          backgroundImage: 'url(https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?q=80&w=2070&auto=format&fit=crop)'
+        }}
+      >
+        <div className="absolute inset-0 bg-black/40" />
+        
+        <div className="relative z-10 container-custom text-center">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-white drop-shadow-2xl">
             Durma Melhor, Viva Melhor
           </h1>
-          <p className="text-xl md:text-2xl mb-8 text-purple-100">
-            Colchões de alta qualidade para o seu conforto
+          <p className="text-xl md:text-2xl mb-10 max-w-3xl mx-auto text-white/95 drop-shadow-lg font-light">
+            Colchões de alta qualidade para o seu conforto e bem-estar
           </p>
-          <Link to="/produtos" className="btn btn-primary text-lg">
+          <Link to="/produtos" className="btn btn-primary btn-lg shadow-2xl">
             Ver Produtos
-            <ArrowRight size={20} />
+            <ArrowRight className="w-6 h-6" />
           </Link>
         </div>
       </section>
 
       {/* Featured Products */}
-      <section className="py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl font-bold text-center mb-12">
-            Produtos em Destaque
-          </h2>
+      <section className="section bg-pattern">
+        <div className="container-custom">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full mb-4">
+              <Sparkles className="w-4 h-4" />
+              <span className="text-sm font-semibold">Destaques</span>
+            </div>
+            <h2 className="text-4xl font-bold text-neutral-900 mb-4">
+              Produtos em Destaque
+            </h2>
+            <p className="text-lg text-neutral-600">
+              Selecionamos os melhores colchões para você
+            </p>
+          </div>
 
           {loading ? (
             <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
             </div>
           ) : featuredProducts.length === 0 ? (
-            <p className="text-center text-gray-600">
-              Nenhum produto em destaque no momento.
-            </p>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredProducts.map((produto) => (
-                <ProductCard
-                  key={produto.id}
-                  produto={produto}
-                  onClick={() => (window.location.href = '/produtos')}
-                />
-              ))}
+            <div className="text-center py-12">
+              <p className="text-neutral-600 mb-6">
+                Nenhum produto em destaque no momento.
+              </p>
+              <Link to="/produtos" className="btn btn-secondary">
+                Ver Todos os Produtos
+              </Link>
             </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                {featuredProducts.map((produto) => (
+                  <ProductCard
+                    key={produto.id}
+                    produto={produto}
+                    onClick={() => (window.location.href = '/produtos')}
+                  />
+                ))}
+              </div>
+              <div className="text-center">
+                <Link to="/produtos" className="btn btn-secondary btn-lg">
+                  Ver Todos os Produtos
+                  <ArrowRight className="w-5 h-5" />
+                </Link>
+              </div>
+            </>
           )}
         </div>
       </section>
 
       {/* About Preview */}
-      <section className="bg-gray-100 py-16 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6">Sobre Nossa Loja</h2>
-          <p className="text-lg text-gray-700 mb-8">
-            Há mais de 20 anos oferecendo os melhores colchões para garantir noites de sono
-            perfeitas. Qualidade, conforto e atendimento personalizado.
-          </p>
-          <Link to="/sobre" className="btn btn-secondary">
-            Saiba Mais
-          </Link>
+      <section className="section bg-neutral-50">
+        <div className="container-custom">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl font-bold mb-6 text-neutral-900">Sobre Nossa Loja</h2>
+            <p className="text-lg text-neutral-700 mb-8 leading-relaxed">
+              Há mais de 20 anos oferecendo os melhores colchões para garantir noites de sono
+              perfeitas. Qualidade, conforto e atendimento personalizado são nossos pilares.
+            </p>
+            <Link to="/sobre" className="btn btn-secondary btn-lg">
+              Saiba Mais Sobre Nós
+            </Link>
+          </div>
         </div>
       </section>
     </div>

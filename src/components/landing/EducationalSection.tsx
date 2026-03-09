@@ -26,12 +26,12 @@ export default function EducationalSection() {
   ]
 
   return (
-    <section className="py-16 px-4">
-      <div className="max-w-6xl mx-auto">
-        <h2 className="text-4xl font-bold text-center mb-4 text-gray-900">
+    <section className="section">
+      <div className="container-custom">
+        <h2 className="text-4xl font-bold text-center mb-4 text-neutral-900">
           Como escolher o colchão ideal
         </h2>
-        <p className="text-center text-gray-600 mb-12 text-lg">
+        <p className="text-center text-neutral-600 mb-12 text-lg">
           Dicas essenciais para fazer a escolha certa
         </p>
         
