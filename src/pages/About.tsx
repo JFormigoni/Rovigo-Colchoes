@@ -23,7 +23,7 @@ export default function About() {
             Sobre Nós
           </h1>
           <p className="text-xl md:text-2xl max-w-3xl mx-auto text-white/95 drop-shadow-lg font-light">
-            Transformando noites de sono há mais de 20 anos
+            Transformando noites de sono em noites de conforto
           </p>
         </div>
       </section>
@@ -38,7 +38,7 @@ export default function About() {
               </div>
               <h2 className="text-4xl font-bold mb-6 text-neutral-900">Nossa História</h2>
               <p className="text-lg text-neutral-700 leading-relaxed">
-                Fundada em 2004, nossa empresa nasceu do sonho de proporcionar noites de sono perfeitas para todas as famílias. Começamos como uma pequena loja e hoje somos referência em qualidade e atendimento personalizado, sempre com foco no bem-estar e conforto dos nossos clientes.
+                Fundada em 2024, nossa empresa nasceu do sonho de proporcionar noites de sono perfeitas para todas as famílias. Desde o início, nosso compromisso é oferecer produtos de qualidade e um atendimento personalizado, sempre com foco no bem-estar e conforto dos nossos clientes.
               </p>
             </div>
           </div>
@@ -67,7 +67,7 @@ export default function About() {
               </div>
               <h3 className="text-2xl font-bold mb-4 text-neutral-900">Visão</h3>
               <p className="text-neutral-700 leading-relaxed">
-                Ser a marca de colchões mais confiável e reconhecida pela excelência em produtos e atendimento em todo o país.
+                Ser a loja de colchões mais confiável e reconhecida pela excelência em produtos e atendimento em todo o país.
               </p>
             </div>
 
@@ -150,11 +150,11 @@ export default function About() {
         <div className="container-custom">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div>
-              <div className="text-5xl font-bold text-blue-700 mb-2">20+</div>
+              <div className="text-5xl font-bold text-blue-700 mb-2">2+</div>
               <div className="text-neutral-700 font-medium">Anos de Experiência</div>
             </div>
             <div>
-              <div className="text-5xl font-bold text-blue-700 mb-2">50k+</div>
+              <div className="text-5xl font-bold text-blue-700 mb-2">2.5k+</div>
               <div className="text-neutral-700 font-medium">Clientes Satisfeitos</div>
             </div>
             <div>

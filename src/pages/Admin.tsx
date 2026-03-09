@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LogOut, Plus, Pencil, Trash2, Package, TrendingUp, Star, Eye, EyeOff, Tag } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import type { Produto } from '@/lib/database.types'
+import type { Produto, TamanhoPrecificacao } from '@/lib/database.types'
 import ProductForm from '@/components/ProductForm'
 
 export default function Admin() {
@@ -162,6 +162,42 @@ export default function Admin() {
     loadProducts()
   }
 
+  // Função auxiliar para obter preços por tamanho parseados
+  const getPrecosPorTamanho = (produto: Produto): TamanhoPrecificacao[] | null => {
+    if (!produto.precos_por_tamanho) return null
+    
+    try {
+      const precos = typeof produto.precos_por_tamanho === 'string'
+        ? JSON.parse(produto.precos_por_tamanho)
+        : produto.precos_por_tamanho
+      
+      return Array.isArray(precos) ? precos : null
+    } catch (error) {
+      console.error('Erro ao parsear precos_por_tamanho:', error)
+      return null
+    }
+  }
+
+  // Função para obter o menor preço (do primeiro tamanho)
+  const getMenorPreco = (produto: Produto): { preco: number, precoPromocional: number | null } => {
+    const precosPorTamanho = getPrecosPorTamanho(produto)
+    
+    if (precosPorTamanho && precosPorTamanho.length > 0) {
+      // Retorna o preço do primeiro tamanho (que é o menor)
+      const primeiroTamanho = precosPorTamanho[0]
+      return {
+        preco: primeiroTamanho.preco,
+        precoPromocional: primeiroTamanho.preco_promocional || null
+      }
+    }
+    
+    // Se não houver preços por tamanho, retorna os preços padrão
+    return {
+      preco: produto.preco,
+      precoPromocional: produto.preco_promocional
+    }
+  }
+
   // Estatísticas
   const totalProducts = products.length
   const inStock = products.filter(p => p.estoque).length
@@ -290,14 +326,27 @@ export default function Admin() {
                       </td>
                       <td className="py-4 px-4">
                         <div>
-                          {produto.preco_promocional ? (
-                            <>
-                              <p className="font-bold text-blue-600">R$ {produto.preco_promocional.toFixed(2)}</p>
-                              <p className="text-sm text-neutral-400 line-through">R$ {produto.preco.toFixed(2)}</p>
-                            </>
-                          ) : (
-                            <p className="font-bold text-neutral-900">R$ {produto.preco.toFixed(2)}</p>
-                          )}
+                          {(() => {
+                            const { preco, precoPromocional } = getMenorPreco(produto)
+                            const precosPorTamanho = getPrecosPorTamanho(produto)
+                            
+                            return precoPromocional ? (
+                              <>
+                                <p className="font-bold text-blue-600">R$ {precoPromocional.toFixed(2)}</p>
+                                <p className="text-sm text-neutral-400 line-through">R$ {preco.toFixed(2)}</p>
+                                {precosPorTamanho && (
+                                  <p className="text-xs text-neutral-500 mt-1">A partir de</p>
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                <p className="font-bold text-neutral-900">R$ {preco.toFixed(2)}</p>
+                                {precosPorTamanho && (
+                                  <p className="text-xs text-neutral-500 mt-1">A partir de</p>
+                                )}
+                              </>
+                            )
+                          })()}
                         </div>
                       </td>
                       <td className="py-4 px-4">

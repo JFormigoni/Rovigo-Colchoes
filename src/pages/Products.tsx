@@ -1,20 +1,21 @@
 import { useEffect, useState } from 'react'
-import { MessageCircle, Star, X } from 'lucide-react'
+import { MessageCircle, Star, Tag, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import type { Produto } from '@/lib/database.types'
+import type { Produto, TamanhoPrecificacao } from '@/lib/database.types'
 import { openWhatsApp } from '@/lib/whatsapp'
 
 export default function Products() {
   const [products, setProducts] = useState<Produto[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState<'all' | 'available' | 'featured'>('all')
+  const [filter, setFilter] = useState<'all' | 'available' | 'featured' | 'promo'>('all')
+  const [sizeFilter, setSizeFilter] = useState<string>('all')
   const [selectedProduct, setSelectedProduct] = useState<Produto | null>(null)
   const [selectedColor, setSelectedColor] = useState<string>('')
   const [selectedSize, setSelectedSize] = useState<string>('')
 
   useEffect(() => {
     loadProducts()
-  }, [filter])
+  }, [filter, sizeFilter])
 
   async function loadProducts() {
     try {
@@ -28,12 +29,24 @@ export default function Products() {
         query = query.eq('estoque', true)
       } else if (filter === 'featured') {
         query = query.eq('destaque', true).eq('estoque', true)
+      } else if (filter === 'promo') {
+        query = query.not('preco_promocional', 'is', null).eq('estoque', true)
       }
 
       const { data, error } = await query
 
       if (error) throw error
-      setProducts(data || [])
+      
+      let filteredProducts = data || []
+      
+      // Filtrar por tamanho se selecionado
+      if (sizeFilter !== 'all') {
+        filteredProducts = filteredProducts.filter(produto => 
+          produto.tamanhos && produto.tamanhos.includes(sizeFilter)
+        )
+      }
+      
+      setProducts(filteredProducts)
     } catch (error) {
       console.error('Erro ao carregar produtos:', error)
     } finally {
@@ -49,6 +62,22 @@ export default function Products() {
     }
   }
 
+  // Função auxiliar para obter preços por tamanho parseados
+  const getPrecosPorTamanho = (produto: Produto): TamanhoPrecificacao[] | null => {
+    if (!produto.precos_por_tamanho) return null
+    
+    try {
+      const precos = typeof produto.precos_por_tamanho === 'string'
+        ? JSON.parse(produto.precos_por_tamanho)
+        : produto.precos_por_tamanho
+      
+      return Array.isArray(precos) ? precos : null
+    } catch (error) {
+      console.error('Erro ao parsear precos_por_tamanho:', error)
+      return null
+    }
+  }
+
   const handleCloseModal = () => {
     setSelectedProduct(null)
     setSelectedColor('')
@@ -58,11 +87,24 @@ export default function Products() {
   const handleWhatsAppContact = () => {
     if (!selectedProduct) return
 
-    const preco = selectedProduct.preco_promocional || selectedProduct.preco
+    // Buscar preço do tamanho selecionado se houver preços por tamanho
+    let preco = selectedProduct.preco
+    let precoPromocional = selectedProduct.preco_promocional
+
+    const precosPorTamanho = getPrecosPorTamanho(selectedProduct)
+    if (precosPorTamanho && selectedSize) {
+      const precoTamanho = precosPorTamanho.find(p => p.tamanho === selectedSize)
+      if (precoTamanho) {
+        preco = precoTamanho.preco
+        precoPromocional = precoTamanho.preco_promocional || null
+      }
+    }
+
+    const precoFinal = precoPromocional || preco
 
     let message = `Olá! Tenho interesse no produto:\n\n`
     message += `📦 *${selectedProduct.nome}*\n`
-    message += `💰 Preço: R$ ${preco.toFixed(2)}\n`
+    message += `💰 Preço: R$ ${precoFinal.toFixed(2)}\n`
     
     if (selectedColor) {
       message += `🎨 Cor: ${selectedColor}\n`
@@ -102,7 +144,8 @@ export default function Products() {
       {/* Filters Section */}
       <section className="section bg-white">
         <div className="container-custom">
-          <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
+          {/* Filtros de Status */}
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
             <span className="text-neutral-700 font-medium">Filtrar por:</span>
             <button
               onClick={() => setFilter('all')}
@@ -125,6 +168,16 @@ export default function Products() {
               Disponíveis
             </button>
             <button
+              onClick={() => setFilter('promo')}
+              className={`px-8 py-3 rounded-full font-medium transition-all duration-300 ${
+                filter === 'promo'
+                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg scale-105'
+                  : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-blue-300'
+              }`}
+            >
+              Promoções
+            </button>
+            <button
               onClick={() => setFilter('featured')}
               className={`px-8 py-3 rounded-full font-medium transition-all duration-300 ${
                 filter === 'featured'
@@ -133,6 +186,61 @@ export default function Products() {
               }`}
             >
               Em Destaque
+            </button>
+          </div>
+
+          {/* Filtros de Tamanho */}
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
+            <span className="text-neutral-700 font-medium">Tamanho:</span>
+            <button
+              onClick={() => setSizeFilter('all')}
+              className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
+                sizeFilter === 'all'
+                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg scale-105'
+                  : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-purple-300'
+              }`}
+            >
+              Todos
+            </button>
+            <button
+              onClick={() => setSizeFilter('Solteiro')}
+              className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
+                sizeFilter === 'Solteiro'
+                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg scale-105'
+                  : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-purple-300'
+              }`}
+            >
+              Solteiro
+            </button>
+            <button
+              onClick={() => setSizeFilter('Casal')}
+              className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
+                sizeFilter === 'Casal'
+                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg scale-105'
+                  : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-purple-300'
+              }`}
+            >
+              Casal
+            </button>
+            <button
+              onClick={() => setSizeFilter('Queen')}
+              className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
+                sizeFilter === 'Queen'
+                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg scale-105'
+                  : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-purple-300'
+              }`}
+            >
+              Queen
+            </button>
+            <button
+              onClick={() => setSizeFilter('King')}
+              className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
+                sizeFilter === 'King'
+                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg scale-105'
+                  : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-purple-300'
+              }`}
+            >
+              King
             </button>
           </div>
 
@@ -165,7 +273,26 @@ export default function Products() {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {products.map((produto) => (
+                {products.map((produto) => {
+                  // Calcular preço baseado no filtro de tamanho
+                  let preco = produto.preco
+                  let precoPromocional = produto.preco_promocional
+
+                  const precosPorTamanho = getPrecosPorTamanho(produto)
+                  if (precosPorTamanho && sizeFilter !== 'all') {
+                    const precoTamanho = precosPorTamanho.find(p => p.tamanho === sizeFilter)
+                    if (precoTamanho) {
+                      preco = precoTamanho.preco
+                      precoPromocional = precoTamanho.preco_promocional || null
+                    }
+                  }
+
+                  // Determinar se deve mostrar badge de promoção
+                  const temPromocao = sizeFilter !== 'all' 
+                    ? precoPromocional !== null && precoPromocional > 0
+                    : produto.preco_promocional !== null && produto.preco_promocional > 0
+
+                  return (
                   <div 
                     key={produto.id} 
                     className="product-card"
@@ -183,12 +310,20 @@ export default function Products() {
                         <div className="product-badge">
                           <span className="badge badge-out">Esgotado</span>
                         </div>
-                      ) : produto.destaque && (
-                        <div className="product-badge">
-                          <span className="badge badge-new">
-                            <Star className="w-4 h-4 fill-current" />
-                            Destaque
-                          </span>
+                      ) : (
+                        <div className="product-badge flex flex-col gap-2">
+                          {produto.destaque && (
+                            <span className="badge badge-new">
+                              <Star className="w-4 h-4 fill-current" />
+                              Destaque
+                            </span>
+                          )}
+                          {temPromocao && (
+                            <span className="badge badge-promo">
+                              <Tag className="w-4 h-4" />
+                              Promoção
+                            </span>
+                          )}
                         </div>
                       )}
                     </div>
@@ -202,18 +337,18 @@ export default function Products() {
                       </p>
 
                       <div className="flex items-baseline gap-3 mb-4">
-                        {produto.preco_promocional ? (
+                        {precoPromocional ? (
                           <>
                             <span className="product-price">
-                              R$ {produto.preco_promocional.toFixed(2)}
+                              R$ {precoPromocional.toFixed(2)}
                             </span>
                             <span className="product-price-old">
-                              R$ {produto.preco.toFixed(2)}
+                              R$ {preco.toFixed(2)}
                             </span>
                           </>
                         ) : (
                           <span className="product-price">
-                            R$ {produto.preco.toFixed(2)}
+                            R$ {preco.toFixed(2)}
                           </span>
                         )}
                       </div>
@@ -230,7 +365,8 @@ export default function Products() {
                       </button>
                     </div>
                   </div>
-                ))}
+                )})}
+              
               </div>
               
               <div className="text-center mt-12">
@@ -283,21 +419,60 @@ export default function Products() {
                   </div>
 
                   <div className="flex items-baseline gap-3">
-                    {selectedProduct.preco_promocional ? (
-                      <>
+                    {(() => {
+                      // Calcular preço baseado no tamanho selecionado
+                      let preco = selectedProduct.preco
+                      let precoPromocional = selectedProduct.preco_promocional
+
+                      const precosPorTamanho = getPrecosPorTamanho(selectedProduct)
+                      if (precosPorTamanho && selectedSize) {
+                        const precoTamanho = precosPorTamanho.find(p => p.tamanho === selectedSize)
+                        if (precoTamanho) {
+                          preco = precoTamanho.preco
+                          precoPromocional = precoTamanho.preco_promocional || null
+                        }
+                      }
+
+                      return precoPromocional ? (
+                        <>
+                          <span className="text-4xl font-bold text-blue-700">
+                            R$ {precoPromocional.toFixed(2)}
+                          </span>
+                          <span className="text-xl text-neutral-400 line-through">
+                            R$ {preco.toFixed(2)}
+                          </span>
+                        </>
+                      ) : (
                         <span className="text-4xl font-bold text-blue-700">
-                          R$ {selectedProduct.preco_promocional.toFixed(2)}
+                          R$ {preco.toFixed(2)}
                         </span>
-                        <span className="text-xl text-neutral-400 line-through">
-                          R$ {selectedProduct.preco.toFixed(2)}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-4xl font-bold text-blue-700">
-                        R$ {selectedProduct.preco.toFixed(2)}
-                      </span>
-                    )}
+                      )
+                    })()}
                   </div>
+
+                  {/* Size Selection */}
+                  {selectedProduct.tamanhos && selectedProduct.tamanhos.length > 0 && (
+                    <div>
+                      <label className="block text-sm font-semibold text-neutral-900 mb-3">
+                        Tamanho {getPrecosPorTamanho(selectedProduct) && <span className="text-blue-600">(o preço varia por tamanho)</span>}
+                      </label>
+                      <div className="flex flex-wrap gap-3">
+                        {selectedProduct.tamanhos.map((tamanho) => (
+                          <button
+                            key={tamanho}
+                            onClick={() => setSelectedSize(tamanho)}
+                            className={`px-6 py-3 rounded-full font-medium transition-all ${
+                              selectedSize === tamanho
+                                ? 'bg-blue-600 text-white shadow-md scale-105'
+                                : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                            }`}
+                          >
+                            {tamanho}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Color Selection */}
                   {selectedProduct.cores && selectedProduct.cores.length > 0 && (
@@ -317,30 +492,6 @@ export default function Products() {
                             }`}
                           >
                             {cor}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Size Selection */}
-                  {selectedProduct.tamanhos && selectedProduct.tamanhos.length > 0 && (
-                    <div>
-                      <label className="block text-sm font-semibold text-neutral-900 mb-3">
-                        Tamanho
-                      </label>
-                      <div className="flex flex-wrap gap-3">
-                        {selectedProduct.tamanhos.map((tamanho) => (
-                          <button
-                            key={tamanho}
-                            onClick={() => setSelectedSize(tamanho)}
-                            className={`px-6 py-3 rounded-full font-medium transition-all ${
-                              selectedSize === tamanho
-                                ? 'bg-blue-600 text-white shadow-md scale-105'
-                                : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
-                            }`}
-                          >
-                            {tamanho}
                           </button>
                         ))}
                       </div>

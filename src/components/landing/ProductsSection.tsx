@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { MessageCircle, Star, ArrowRight } from 'lucide-react'
+import { MessageCircle, Star, ArrowRight, Tag } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
-import type { Produto } from '@/lib/database.types'
+import type { Produto, TamanhoPrecificacao } from '@/lib/database.types'
 import { openWhatsApp } from '@/lib/whatsapp'
 
 /**
@@ -53,14 +53,43 @@ export default function ProductsSection() {
     setSelectedSize('')
   }
 
+  // Função auxiliar para obter preços por tamanho parseados
+  const getPrecosPorTamanho = (produto: Produto): TamanhoPrecificacao[] | null => {
+    if (!produto.precos_por_tamanho) return null
+    
+    try {
+      const precos = typeof produto.precos_por_tamanho === 'string'
+        ? JSON.parse(produto.precos_por_tamanho)
+        : produto.precos_por_tamanho
+      
+      return Array.isArray(precos) ? precos : null
+    } catch (error) {
+      console.error('Erro ao parsear precos_por_tamanho:', error)
+      return null
+    }
+  }
+
   const handleWhatsAppContact = () => {
     if (!selectedProduct) return
 
-    const preco = selectedProduct.preco_promocional || selectedProduct.preco
+    // Buscar preço do tamanho selecionado se houver preços por tamanho
+    let preco = selectedProduct.preco
+    let precoPromocional = selectedProduct.preco_promocional
+
+    const precosPorTamanho = getPrecosPorTamanho(selectedProduct)
+    if (precosPorTamanho && selectedSize) {
+      const precoTamanho = precosPorTamanho.find(p => p.tamanho === selectedSize)
+      if (precoTamanho) {
+        preco = precoTamanho.preco
+        precoPromocional = precoTamanho.preco_promocional || null
+      }
+    }
+
+    const precoFinal = precoPromocional || preco
 
     let message = `Olá! Tenho interesse no produto:\n\n`
     message += `📦 *${selectedProduct.nome}*\n`
-    message += `💰 Preço: R$ ${preco.toFixed(2)}\n`
+    message += `💰 Preço: R$ ${precoFinal.toFixed(2)}\n`
     
     if (selectedColor) {
       message += `🎨 Cor: ${selectedColor}\n`
@@ -123,11 +152,27 @@ export default function ProductsSection() {
                       className="product-image"
                       loading="lazy"
                     />
-                    <div className="product-badge">
-                      <span className="badge badge-new">
-                        <Star className="w-4 h-4 fill-current" />
-                        Destaque
-                      </span>
+                    <div className="product-badge flex flex-col gap-2">
+                      {produto.destaque && (
+                        <span className="badge badge-new">
+                          <Star className="w-4 h-4 fill-current" />
+                          Destaque
+                        </span>
+                      )}
+                      {(() => {
+                        // Verificar se tem promoção no primeiro tamanho
+                        const precosPorTamanho = getPrecosPorTamanho(produto)
+                        const temPromocao = precosPorTamanho && precosPorTamanho.length > 0
+                          ? precosPorTamanho[0].preco_promocional !== null && precosPorTamanho[0].preco_promocional > 0
+                          : produto.preco_promocional !== null && produto.preco_promocional > 0
+                        
+                        return temPromocao && (
+                          <span className="badge badge-promo">
+                            <Tag className="w-4 h-4" />
+                            Promoção
+                          </span>
+                        )
+                      })()}
                     </div>
                   </div>
 
@@ -217,21 +262,60 @@ export default function ProductsSection() {
                   </div>
 
                   <div className="flex items-baseline gap-3">
-                    {selectedProduct.preco_promocional ? (
-                      <>
+                    {(() => {
+                      // Calcular preço baseado no tamanho selecionado
+                      let preco = selectedProduct.preco
+                      let precoPromocional = selectedProduct.preco_promocional
+
+                      const precosPorTamanho = getPrecosPorTamanho(selectedProduct)
+                      if (precosPorTamanho && selectedSize) {
+                        const precoTamanho = precosPorTamanho.find(p => p.tamanho === selectedSize)
+                        if (precoTamanho) {
+                          preco = precoTamanho.preco
+                          precoPromocional = precoTamanho.preco_promocional || null
+                        }
+                      }
+
+                      return precoPromocional ? (
+                        <>
+                          <span className="text-4xl font-bold text-blue-700">
+                            R$ {precoPromocional.toFixed(2)}
+                          </span>
+                          <span className="text-xl text-neutral-400 line-through">
+                            R$ {preco.toFixed(2)}
+                          </span>
+                        </>
+                      ) : (
                         <span className="text-4xl font-bold text-blue-700">
-                          R$ {selectedProduct.preco_promocional.toFixed(2)}
+                          R$ {preco.toFixed(2)}
                         </span>
-                        <span className="text-xl text-neutral-400 line-through">
-                          R$ {selectedProduct.preco.toFixed(2)}
-                        </span>
-                      </>
-                    ) : (
-                      <span className="text-4xl font-bold text-blue-700">
-                        R$ {selectedProduct.preco.toFixed(2)}
-                      </span>
-                    )}
+                      )
+                    })()}
                   </div>
+
+                  {/* Size Selection */}
+                  {selectedProduct.tamanhos && selectedProduct.tamanhos.length > 0 && (
+                    <div>
+                      <label className="block text-sm font-semibold text-neutral-900 mb-3">
+                        Tamanho {getPrecosPorTamanho(selectedProduct) && <span className="text-blue-600">(o preço varia por tamanho)</span>}
+                      </label>
+                      <div className="flex flex-wrap gap-3">
+                        {selectedProduct.tamanhos.map((tamanho) => (
+                          <button
+                            key={tamanho}
+                            onClick={() => setSelectedSize(tamanho)}
+                            className={`px-6 py-3 rounded-full font-medium transition-all ${
+                              selectedSize === tamanho
+                                ? 'bg-blue-600 text-white shadow-md scale-105'
+                                : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
+                            }`}
+                          >
+                            {tamanho}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Color Selection */}
                   {selectedProduct.cores && selectedProduct.cores.length > 0 && (
@@ -251,30 +335,6 @@ export default function ProductsSection() {
                             }`}
                           >
                             {cor}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Size Selection */}
-                  {selectedProduct.tamanhos && selectedProduct.tamanhos.length > 0 && (
-                    <div>
-                      <label className="block text-sm font-semibold text-neutral-900 mb-3">
-                        Tamanho
-                      </label>
-                      <div className="flex flex-wrap gap-3">
-                        {selectedProduct.tamanhos.map((tamanho) => (
-                          <button
-                            key={tamanho}
-                            onClick={() => setSelectedSize(tamanho)}
-                            className={`px-6 py-3 rounded-full font-medium transition-all ${
-                              selectedSize === tamanho
-                                ? 'bg-blue-600 text-white shadow-md scale-105'
-                                : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
-                            }`}
-                          >
-                            {tamanho}
                           </button>
                         ))}
                       </div>
