@@ -185,4 +185,4 @@ Este projeto é privado e proprietário.
 
 ## 🤝 Suporte
 
-Para dúvidas ou problemas, entre em contato com o desenvolvedor.
+Para dúvidas ou problemas, entre em contato via LinkedIn.
