@@ -99,21 +99,23 @@ export default function SocialProofSection() {
         </p>
 
         {/* Carousel Container */}
-        <div className="relative max-w-7xl mx-auto px-4">
+        <div className="relative max-w-7xl mx-auto">
           {/* Carousel Track */}
-          <div className="overflow-hidden py-4">
+          <div className="overflow-hidden px-4 py-4">
             <div 
-              className="flex transition-transform duration-500 ease-out"
+              className="flex transition-transform duration-500 ease-out gap-4 md:gap-6"
               style={{ 
-                transform: `translateX(-${currentIndex * 100}%)`,
-                gap: '1.5rem'
+                transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`
               }}
               data-testid="testimonials-grid"
             >
               {testimonials.map((testimonial) => (
                 <div 
                   key={testimonial.id}
-                  className="flex-shrink-0 w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)] px-2"
+                  className="flex-shrink-0"
+                  style={{
+                    width: `calc(${100 / itemsPerView}% - ${itemsPerView === 1 ? '0px' : itemsPerView === 2 ? '12px' : '16px'})`
+                  }}
                 >
                   <TestimonialCard testimonial={testimonial} />
                 </div>
