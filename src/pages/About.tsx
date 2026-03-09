@@ -67,7 +67,7 @@ export default function About() {
               </div>
               <h3 className="text-2xl font-bold mb-4 text-neutral-900">Visão</h3>
               <p className="text-neutral-700 leading-relaxed">
-                Ser a loja de colchões mais confiável e reconhecida pela excelência em produtos e atendimento em todo o país.
+                Ser a marca de colchões mais confiável e reconhecida pela excelência em produtos e atendimento em todo o país.
               </p>
             </div>
 

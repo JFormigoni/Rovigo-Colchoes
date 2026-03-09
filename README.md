@@ -1,4 +1,4 @@
-# Loja de Colchões - E-commerce Moderno
+# Rovigo Colchões - E-commerce Moderno
 
 E-commerce completo para venda de colchões com landing page moderna, catálogo de produtos e painel administrativo.
 
