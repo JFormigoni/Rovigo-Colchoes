@@ -163,7 +163,7 @@ export default function ProductsSection() {
                         // Verificar se tem promoção no primeiro tamanho
                         const precosPorTamanho = getPrecosPorTamanho(produto)
                         const temPromocao = precosPorTamanho && precosPorTamanho.length > 0
-                          ? precosPorTamanho[0].preco_promocional !== null && precosPorTamanho[0].preco_promocional > 0
+                          ? precosPorTamanho[0].preco_promocional !== null && (precosPorTamanho[0].preco_promocional ?? 0) > 0
                           : produto.preco_promocional !== null && produto.preco_promocional > 0
                         
                         return temPromocao && (

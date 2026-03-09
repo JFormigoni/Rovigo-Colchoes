@@ -37,7 +37,7 @@ export default function Products() {
 
       if (error) throw error
       
-      let filteredProducts = data || []
+      let filteredProducts = (data || []) as Produto[]
       
       // Filtrar por tamanho se selecionado
       if (sizeFilter !== 'all') {
