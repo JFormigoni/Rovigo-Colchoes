@@ -27,7 +27,7 @@ export default function Products() {
       if (filter === 'available') {
         query = query.eq('estoque', true)
       } else if (filter === 'featured') {
-        query = query.eq('destaque', true)
+        query = query.eq('destaque', true).eq('estoque', true)
       }
 
       const { data, error } = await query
