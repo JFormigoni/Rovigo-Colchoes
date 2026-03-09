@@ -9,7 +9,7 @@ export default function Footer() {
           <div>
             <h3 className="text-white text-xl font-bold mb-4">Sobre Nós</h3>
             <p className="mb-4 text-white">
-              Especialistas em sono há mais de 20 anos, oferecendo os melhores colchões para sua qualidade de vida.
+              Especialistas em sono há mais de 2 anos, oferecendo os melhores colchões para sua qualidade de vida.
             </p>
           </div>
           
@@ -19,7 +19,7 @@ export default function Footer() {
             <div className="space-y-2 text-white">
               <p className="flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-white" aria-hidden="true" />
-                <span className="text-white">Rua Exemplo, 123 - Centro</span>
+                <span className="text-white">Rua Luís Franceschi, 1565 - Thomaz Coelho, Araucária - PR, 83707-072</span>
               </p>
               <p className="flex items-center gap-2">
                 <Phone className="w-5 h-5 text-white" aria-hidden="true" />
