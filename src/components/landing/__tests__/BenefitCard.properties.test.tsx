@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import fc from 'fast-check'
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import BenefitCard, { Benefit } from '../BenefitCard'
 import { Heart, Shield, Truck, Award, Star, Check, Zap, Clock } from 'lucide-react'
 

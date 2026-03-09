@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import fc from 'fast-check'
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import EducationalSection from '../EducationalSection'
 
 // Feature: landing-page-colchoes, Property 6: Educational Tip Structure

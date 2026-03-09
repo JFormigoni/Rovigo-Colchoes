@@ -53,7 +53,6 @@ describe('Property 7: WhatsApp Link Format', () => {
               if (char !== '%') {
                 // Check that the raw character doesn't appear unencoded
                 // (it should appear as %XX format)
-                const unEncodedPattern = new RegExp(`[^%]${char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`)
                 if (char === ' ') {
                   // Space should be encoded as %20
                   expect(textParam).not.toContain(' ')
@@ -123,7 +122,8 @@ describe('Property 7: WhatsApp Link Format', () => {
         fc.constantFrom<CTAType>('hero', 'promo', 'final', 'floating'),
         (ctaType) => {
           const message = WHATSAPP_MESSAGES[ctaType]
-          const url = formatWhatsAppURL(message)
+          const messageText = typeof message === 'function' ? message('Produto Teste') : message
+          const url = formatWhatsAppURL(messageText)
           
           // Should follow the correct format
           expect(url).toMatch(/^https:\/\/wa\.me\/\d+\?text=.+/)

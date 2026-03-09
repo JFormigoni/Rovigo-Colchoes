@@ -125,7 +125,7 @@ describe('FloatingWhatsAppButton - Property-Based Tests', () => {
   // **Validates: Requirements 9.6**
   it('Property: button always meets minimum touch target size of 44px x 44px', () => {
     fc.assert(
-      fc.property(fc.boolean(), (isVisible) => {
+      fc.property(fc.boolean(), (_isVisible) => {
         cleanup()
         render(<FloatingWhatsAppButton />)
         const button = screen.getByRole('button', { name: /falar no whatsapp/i })
@@ -175,7 +175,7 @@ describe('FloatingWhatsAppButton - Property-Based Tests', () => {
   // **Validates: Requirements 14.7**
   it('Property: button always has accessible ARIA label', () => {
     fc.assert(
-      fc.property(fc.integer({ min: 0, max: 1000 }), (scrollPosition) => {
+      fc.property(fc.integer({ min: 0, max: 1000 }), (_scrollPosition) => {
         cleanup()
         render(<FloatingWhatsAppButton />)
         const button = screen.getByRole('button', { name: /falar no whatsapp/i })
@@ -191,7 +191,7 @@ describe('FloatingWhatsAppButton - Property-Based Tests', () => {
   // **Validates: Requirements 8.3**
   it('Property: button always displays WhatsApp icon', () => {
     fc.assert(
-      fc.property(fc.boolean(), (isVisible) => {
+      fc.property(fc.boolean(), (_isVisible) => {
         cleanup()
         render(<FloatingWhatsAppButton />)
         const button = screen.getByRole('button', { name: /falar no whatsapp/i })

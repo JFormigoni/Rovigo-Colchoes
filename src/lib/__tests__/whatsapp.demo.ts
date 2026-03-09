@@ -3,7 +3,7 @@
  * This file shows example usage of the whatsapp.ts helper functions
  */
 
-import { formatWhatsAppURL, openWhatsAppWithTemplate, WHATSAPP_MESSAGES } from '../whatsapp'
+import { formatWhatsAppURL, WHATSAPP_MESSAGES } from '../whatsapp'
 
 // Example 1: Format URL for hero CTA
 console.log('Hero CTA URL:')
