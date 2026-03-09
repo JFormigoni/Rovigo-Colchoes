@@ -117,10 +117,10 @@ export default function Admin() {
 
   async function togglePromo(produto: Produto) {
     try {
-      // Se está removendo a promoção, limpar o preço promocional
-      const newValue = produto.preco_promocional 
-        ? null
-        : produto.preco * 0.9 // 10% de desconto padrão
+      // Alternar entre preço normal e preço promocional
+      // Se já tem preço promocional, remove (volta para preço normal)
+      // Se não tem, não faz nada (precisa editar o produto para definir)
+      const newValue = produto.preco_promocional ? null : produto.preco_promocional
 
       const { error } = await (supabase.from('produtos') as any)
         .update({ preco_promocional: newValue })
