@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { LogOut, Plus, Pencil, Trash2, Package, TrendingUp, Star, Eye, EyeOff, Tag } from 'lucide-react'
+import { LogOut, Plus, Pencil, Trash2, Package, TrendingUp, Star, Eye, EyeOff, Tag, Search, X } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import type { Produto, TamanhoPrecificacao } from '@/lib/database.types'
 import ProductForm from '@/components/ProductForm'
 
 export default function Admin() {
   const [products, setProducts] = useState<Produto[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<Produto[]>([])
+  const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Produto | null>(null)
@@ -16,6 +18,22 @@ export default function Admin() {
     checkAuth()
     loadProducts()
   }, [])
+
+  // Filtrar produtos quando o termo de pesquisa mudar
+  useEffect(() => {
+    if (searchTerm.trim() === '') {
+      setFilteredProducts(products)
+    } else {
+      const term = searchTerm.toLowerCase()
+      const filtered = products.filter(produto => 
+        produto.nome.toLowerCase().includes(term) ||
+        produto.descricao?.toLowerCase().includes(term) ||
+        produto.cores?.some(cor => cor.toLowerCase().includes(term)) ||
+        produto.tamanhos?.some(tamanho => tamanho.toLowerCase().includes(term))
+      )
+      setFilteredProducts(filtered)
+    }
+  }, [searchTerm, products])
 
   async function checkAuth() {
     const { data: { session } } = await supabase.auth.getSession()
@@ -33,11 +51,16 @@ export default function Admin() {
 
       if (error) throw error
       setProducts(data || [])
+      setFilteredProducts(data || [])
     } catch (error) {
       console.error('Erro ao carregar produtos:', error)
     } finally {
       setLoading(false)
     }
+  }
+
+  const clearSearch = () => {
+    setSearchTerm('')
   }
 
   async function handleLogout() {
@@ -272,29 +295,76 @@ export default function Admin() {
 
         {/* Products Section */}
         <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-neutral-900">Produtos</h2>
-            <button 
-              onClick={handleAdd} 
-              className="btn btn-primary"
-            >
-              <Plus size={20} />
-              Adicionar Produto
-            </button>
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <h2 className="text-2xl font-bold text-neutral-900">Produtos</h2>
+              
+              <button 
+                onClick={handleAdd} 
+                className="btn btn-primary whitespace-nowrap w-full sm:w-auto"
+              >
+                <Plus size={20} />
+                Adicionar Produto
+              </button>
+            </div>
+            
+            {/* Barra de Pesquisa */}
+            <div className="relative w-full">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+              <input
+                type="text"
+                placeholder="Pesquisar produtos por nome, descrição, cor ou tamanho..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-10 py-3 border-2 border-neutral-200 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 outline-none transition-all"
+              />
+              {searchTerm && (
+                <button
+                  onClick={clearSearch}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
+                  aria-label="Limpar pesquisa"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
           </div>
+
+          {/* Contador de resultados */}
+          {searchTerm && (
+            <div className="mb-4 px-2 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-700 font-medium">
+                {filteredProducts.length === 0 
+                  ? `Nenhum produto encontrado para "${searchTerm}"` 
+                  : `${filteredProducts.length} ${filteredProducts.length === 1 ? 'produto encontrado' : 'produtos encontrados'} para "${searchTerm}"`
+                }
+              </p>
+            </div>
+          )}
 
           {loading ? (
             <div className="text-center py-12">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
             </div>
-          ) : products.length === 0 ? (
+          ) : filteredProducts.length === 0 ? (
             <div className="text-center py-12">
               <Package className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
-              <p className="text-neutral-600 mb-4">Nenhum produto cadastrado.</p>
-              <button onClick={handleAdd} className="btn btn-primary">
-                <Plus size={20} />
-                Adicionar Primeiro Produto
-              </button>
+              {searchTerm ? (
+                <>
+                  <p className="text-neutral-600 mb-4">Nenhum produto encontrado para "{searchTerm}"</p>
+                  <button onClick={clearSearch} className="btn btn-secondary">
+                    Limpar Pesquisa
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-neutral-600 mb-4">Nenhum produto cadastrado.</p>
+                  <button onClick={handleAdd} className="btn btn-primary">
+                    <Plus size={20} />
+                    Adicionar Primeiro Produto
+                  </button>
+                </>
+              )}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -309,7 +379,7 @@ export default function Admin() {
                   </tr>
                 </thead>
                 <tbody>
-                  {products.map((produto) => (
+                  {filteredProducts.map((produto) => (
                     <tr key={produto.id} className="border-b border-neutral-100 hover:bg-neutral-50 transition-colors">
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-3">
