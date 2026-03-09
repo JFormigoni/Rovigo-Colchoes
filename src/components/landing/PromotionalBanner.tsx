@@ -41,7 +41,7 @@ export default function PromotionalBanner() {
           
           <div className="flex items-center gap-3">
             <Moon className="w-8 h-8 text-white" aria-hidden="true" />
-            <span className="text-xl text-white">100 Noites de Teste</span>
+            <span className="text-xl text-white">Garantia Estendida</span>
           </div>
         </div>
         

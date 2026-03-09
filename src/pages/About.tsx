@@ -136,9 +136,9 @@ export default function About() {
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl mb-6 mx-auto">
                 <Star className="w-10 h-10 text-blue-700" />
               </div>
-              <h3 className="text-xl font-bold mb-3 text-neutral-900">100 Noites de Teste</h3>
+              <h3 className="text-xl font-bold mb-3 text-neutral-900">Garantia Estendida</h3>
               <p className="text-neutral-600">
-                Experimente em casa com garantia de devolução
+                Produtos com garantia de qualidade e durabilidade
               </p>
             </div>
           </div>
