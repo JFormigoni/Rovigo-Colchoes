@@ -17,13 +17,28 @@ export default function ProductsSection() {
   const [selectedColor, setSelectedColor] = useState<string>('')
   const [selectedSize, setSelectedSize] = useState<string>('')
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [itemsPerView, setItemsPerView] = useState(3)
   const navigate = useNavigate()
-
-  // Sempre mostrar 3 produtos por vez
-  const itemsPerView = 3
 
   useEffect(() => {
     loadFeaturedProducts()
+  }, [])
+
+  // Detectar tamanho da tela e ajustar items por view
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setItemsPerView(3)
+      } else if (window.innerWidth >= 768) {
+        setItemsPerView(2)
+      } else {
+        setItemsPerView(1)
+      }
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   async function loadFeaturedProducts() {
@@ -53,7 +68,7 @@ export default function ProductsSection() {
     }, 5000)
 
     return () => clearInterval(interval)
-  }, [currentIndex, products.length])
+  }, [currentIndex, products.length, itemsPerView])
 
   const maxIndex = Math.max(0, products.length - itemsPerView)
 
@@ -165,18 +180,18 @@ export default function ProductsSection() {
                 <>
                   <button
                     onClick={handlePrev}
-                    className="absolute -left-6 top-1/2 -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-20"
+                    className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 md:p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-20"
                     aria-label="Produto anterior"
                   >
-                    <ChevronLeft className="w-6 h-6 text-neutral-900" />
+                    <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-neutral-900" />
                   </button>
 
                   <button
                     onClick={handleNext}
-                    className="absolute -right-6 top-1/2 -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-20"
+                    className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 md:p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-20"
                     aria-label="Próximo produto"
                   >
-                    <ChevronRight className="w-6 h-6 text-neutral-900" />
+                    <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-neutral-900" />
                   </button>
                 </>
               )}
@@ -187,7 +202,7 @@ export default function ProductsSection() {
                   className="flex transition-transform duration-500 ease-out"
                   style={{ 
                     transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
-                    gap: '2rem'
+                    gap: itemsPerView === 1 ? '0' : itemsPerView === 2 ? '1.5rem' : '2rem'
                   }}
                   data-testid="products-grid"
                 >
@@ -196,7 +211,11 @@ export default function ProductsSection() {
                       key={produto.id}
                       className="flex-shrink-0"
                       style={{
-                        width: `calc((100% - ${(itemsPerView - 1) * 2}rem) / ${itemsPerView})`
+                        width: itemsPerView === 1 
+                          ? '100%' 
+                          : itemsPerView === 2 
+                            ? 'calc((100% - 1.5rem) / 2)'
+                            : 'calc((100% - 4rem) / 3)'
                       }}
                     >
                       <div 
