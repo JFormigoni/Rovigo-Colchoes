@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import type { Produto } from '@/lib/database.types'
-import ProductCard from '@/components/ProductCard'
+import FeaturedCarousel from '@/components/FeaturedCarousel'
 
 export default function Home() {
   const [featuredProducts, setFeaturedProducts] = useState<Produto[]>([])
   const [loading, setLoading] = useState(true)
+  const navigate = useNavigate()
 
   useEffect(() => {
     loadFeaturedProducts()
@@ -21,7 +22,7 @@ export default function Home() {
         .eq('destaque', true)
         .eq('estoque', true)
         .order('created_at', { ascending: false })
-        .limit(6)
+        .limit(3) // Apenas 3 produtos em destaque
 
       if (error) throw error
       setFeaturedProducts(data || [])
@@ -30,6 +31,10 @@ export default function Home() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handleProductClick = () => {
+    navigate('/produtos')
   }
 
   return (
@@ -88,16 +93,11 @@ export default function Home() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                {featuredProducts.map((produto) => (
-                  <ProductCard
-                    key={produto.id}
-                    produto={produto}
-                    onClick={() => (window.location.href = '/produtos')}
-                  />
-                ))}
-              </div>
-              <div className="text-center">
+              <FeaturedCarousel 
+                products={featuredProducts} 
+                onProductClick={handleProductClick}
+              />
+              <div className="text-center mt-12">
                 <Link to="/produtos" className="btn btn-secondary btn-lg">
                   Ver Todos os Produtos
                   <ArrowRight className="w-5 h-5" />

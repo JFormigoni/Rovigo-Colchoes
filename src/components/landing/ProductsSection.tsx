@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { MessageCircle, Star, ArrowRight, Tag } from 'lucide-react'
+import { MessageCircle, Star, ArrowRight, Tag, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/lib/supabase'
 import type { Produto, TamanhoPrecificacao } from '@/lib/database.types'
@@ -8,7 +8,7 @@ import { openWhatsApp } from '@/lib/whatsapp'
 /**
  * Products section component for landing page
  * 
- * Displays featured products from the database
+ * Displays featured products from the database in a carousel
  */
 export default function ProductsSection() {
   const [products, setProducts] = useState<Produto[]>([])
@@ -16,7 +16,11 @@ export default function ProductsSection() {
   const [selectedProduct, setSelectedProduct] = useState<Produto | null>(null)
   const [selectedColor, setSelectedColor] = useState<string>('')
   const [selectedSize, setSelectedSize] = useState<string>('')
+  const [currentIndex, setCurrentIndex] = useState(0)
   const navigate = useNavigate()
+
+  // Sempre mostrar 3 produtos por vez
+  const itemsPerView = 3
 
   useEffect(() => {
     loadFeaturedProducts()
@@ -30,7 +34,6 @@ export default function ProductsSection() {
         .eq('destaque', true)
         .eq('estoque', true)
         .order('created_at', { ascending: false })
-        .limit(6)
 
       if (error) throw error
       setProducts(data || [])
@@ -39,6 +42,27 @@ export default function ProductsSection() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Auto-play do carrossel
+  useEffect(() => {
+    if (products.length <= itemsPerView) return
+
+    const interval = setInterval(() => {
+      handleNext()
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [currentIndex, products.length])
+
+  const maxIndex = Math.max(0, products.length - itemsPerView)
+
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev === 0 ? maxIndex : prev - 1))
+  }
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1))
   }
 
   const handleProductClick = (produto: Produto) => {
@@ -134,82 +158,138 @@ export default function ProductsSection() {
           </div>
         ) : (
           <>
-            <div 
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
-              data-testid="products-grid"
-            >
-              {products.map((produto) => (
+            {/* Carousel Container */}
+            <div className="relative max-w-7xl mx-auto">
+              {/* Navigation Buttons */}
+              {products.length > itemsPerView && (
+                <>
+                  <button
+                    onClick={handlePrev}
+                    className="absolute -left-6 top-1/2 -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-20"
+                    aria-label="Produto anterior"
+                  >
+                    <ChevronLeft className="w-6 h-6 text-neutral-900" />
+                  </button>
+
+                  <button
+                    onClick={handleNext}
+                    className="absolute -right-6 top-1/2 -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-20"
+                    aria-label="Próximo produto"
+                  >
+                    <ChevronRight className="w-6 h-6 text-neutral-900" />
+                  </button>
+                </>
+              )}
+
+              {/* Carousel Track */}
+              <div className="overflow-hidden py-4">
                 <div 
-                  key={produto.id} 
-                  className="product-card"
-                  onClick={() => handleProductClick(produto)}
+                  className="flex transition-transform duration-500 ease-out"
+                  style={{ 
+                    transform: `translateX(-${currentIndex * (100 / itemsPerView)}%)`,
+                    gap: '2rem'
+                  }}
+                  data-testid="products-grid"
                 >
-                  {/* Product Image */}
-                  <div className="product-image-wrapper">
-                    <img
-                      src={produto.imagem || 'https://via.placeholder.com/400x300?text=Sem+Imagem'}
-                      alt={produto.nome}
-                      className="product-image"
-                      loading="lazy"
-                    />
-                    <div className="product-badge flex flex-col gap-2">
-                      {produto.destaque && (
-                        <span className="badge badge-new">
-                          <Star className="w-4 h-4 fill-current" />
-                          Destaque
-                        </span>
-                      )}
-                      {(() => {
-                        // Verificar se tem promoção no primeiro tamanho
-                        const precosPorTamanho = getPrecosPorTamanho(produto)
-                        const temPromocao = precosPorTamanho && precosPorTamanho.length > 0
-                          ? precosPorTamanho[0].preco_promocional !== null && (precosPorTamanho[0].preco_promocional ?? 0) > 0
-                          : produto.preco_promocional !== null && produto.preco_promocional > 0
-                        
-                        return temPromocao && (
-                          <span className="badge badge-promo">
-                            <Tag className="w-4 h-4" />
-                            Promoção
-                          </span>
-                        )
-                      })()}
+                  {products.map((produto) => (
+                    <div 
+                      key={produto.id}
+                      className="flex-shrink-0"
+                      style={{
+                        width: `calc((100% - ${(itemsPerView - 1) * 2}rem) / ${itemsPerView})`
+                      }}
+                    >
+                      <div 
+                        className="product-card h-full cursor-pointer"
+                        onClick={() => handleProductClick(produto)}
+                      >
+                        {/* Product Image */}
+                        <div className="product-image-wrapper">
+                          <img
+                            src={produto.imagem || 'https://via.placeholder.com/400x300?text=Sem+Imagem'}
+                            alt={produto.nome}
+                            className="product-image"
+                            loading="lazy"
+                          />
+                          <div className="product-badge flex flex-col gap-2">
+                            {produto.destaque && (
+                              <span className="badge badge-new">
+                                <Star className="w-4 h-4 fill-current" />
+                                Destaque
+                              </span>
+                            )}
+                            {(() => {
+                              // Verificar se tem promoção no primeiro tamanho
+                              const precosPorTamanho = getPrecosPorTamanho(produto)
+                              const temPromocao = precosPorTamanho && precosPorTamanho.length > 0
+                                ? precosPorTamanho[0].preco_promocional !== null && (precosPorTamanho[0].preco_promocional ?? 0) > 0
+                                : produto.preco_promocional !== null && produto.preco_promocional > 0
+                              
+                              return temPromocao && (
+                                <span className="badge badge-promo">
+                                  <Tag className="w-4 h-4" />
+                                  Promoção
+                                </span>
+                              )
+                            })()}
+                          </div>
+                        </div>
+
+                        {/* Product Content */}
+                        <div className="product-content">
+                          <h3 className="product-title">{produto.nome}</h3>
+                          
+                          <p className="product-description">
+                            {produto.descricao}
+                          </p>
+
+                          <div className="flex items-baseline gap-3 mb-4">
+                            {produto.preco_promocional ? (
+                              <>
+                                <span className="product-price">
+                                  R$ {produto.preco_promocional.toFixed(2)}
+                                </span>
+                                <span className="product-price-old">
+                                  R$ {produto.preco.toFixed(2)}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="product-price">
+                                R$ {produto.preco.toFixed(2)}
+                              </span>
+                            )}
+                          </div>
+
+                          <button className="btn btn-primary w-full justify-center">
+                            Ver Detalhes
+                          </button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Product Content */}
-                  <div className="product-content">
-                    <h3 className="product-title">{produto.nome}</h3>
-                    
-                    <p className="product-description">
-                      {produto.descricao}
-                    </p>
-
-                    <div className="flex items-baseline gap-3 mb-4">
-                      {produto.preco_promocional ? (
-                        <>
-                          <span className="product-price">
-                            R$ {produto.preco_promocional.toFixed(2)}
-                          </span>
-                          <span className="product-price-old">
-                            R$ {produto.preco.toFixed(2)}
-                          </span>
-                        </>
-                      ) : (
-                        <span className="product-price">
-                          R$ {produto.preco.toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-
-                    <button className="btn btn-primary w-full justify-center">
-                      Ver Detalhes
-                    </button>
-                  </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+
+              {/* Indicators */}
+              {products.length > itemsPerView && (
+                <div className="flex justify-center gap-2 mt-8">
+                  {Array.from({ length: maxIndex + 1 }).map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentIndex(index)}
+                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                        index === currentIndex 
+                          ? 'bg-blue-600 w-8' 
+                          : 'bg-neutral-300 hover:bg-neutral-400'
+                      }`}
+                      aria-label={`Ir para slide ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div className="text-center">
+            <div className="text-center mt-12">
               <button
                 onClick={() => navigate('/produtos')}
                 className="btn btn-secondary btn-lg"

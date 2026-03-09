@@ -5,12 +5,12 @@ import { WHATSAPP_NUMBER } from './config'
  * Message templates for different CTA types on the landing page
  */
 export const WHATSAPP_MESSAGES = {
-  hero: 'Olá! Vim da landing page e gostaria de saber mais sobre os colchões.',
+  hero: 'Olá! Vim pela página inicial do site e gostaria de saber mais sobre os colchões.',
   product: (productName: string) => 
     `Olá! Tenho interesse no modelo ${productName}. Gostaria de mais informações.`,
-  promo: 'Olá! Gostaria de saber mais sobre as promoções disponíveis.',
-  final: 'Olá! Estou pronto para melhorar meu sono. Gostaria de falar com um especialista.',
-  floating: 'Olá! Gostaria de mais informações sobre os colchões.'
+  promo: 'Olá! Vim pelo site e gostaria de saber mais sobre as promoções disponíveis.',
+  final: 'Olá! Acabei de acessar o site e quero melhorar meu sono. Poderia falar com um especialista sobre os colchões?',
+  floating: 'Olá! Estou navegando pelo site e gostaria de mais informações sobre os colchões.'
 } as const
 
 export type CTAType = keyof typeof WHATSAPP_MESSAGES

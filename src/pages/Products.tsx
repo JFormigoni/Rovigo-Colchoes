@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { MessageCircle, Star, Tag, X } from 'lucide-react'
+import { MessageCircle, Star, Tag, X, SlidersHorizontal, DollarSign } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import type { Produto, TamanhoPrecificacao } from '@/lib/database.types'
 import { openWhatsApp } from '@/lib/whatsapp'
@@ -9,13 +9,18 @@ export default function Products() {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'available' | 'featured' | 'promo'>('all')
   const [sizeFilter, setSizeFilter] = useState<string>('all')
+  const [minPrice, setMinPrice] = useState<number>(0)
+  const [maxPrice, setMaxPrice] = useState<number>(0)
+  const [minPriceInputValue, setMinPriceInputValue] = useState<string>('')
+  const [maxPriceInputValue, setMaxPriceInputValue] = useState<string>('')
+  const [showFilters, setShowFilters] = useState<boolean>(false)
   const [selectedProduct, setSelectedProduct] = useState<Produto | null>(null)
   const [selectedColor, setSelectedColor] = useState<string>('')
   const [selectedSize, setSelectedSize] = useState<string>('')
 
   useEffect(() => {
     loadProducts()
-  }, [filter, sizeFilter])
+  }, [filter, sizeFilter, minPrice, maxPrice])
 
   async function loadProducts() {
     try {
@@ -46,6 +51,30 @@ export default function Products() {
         )
       }
       
+      // Filtrar por faixa de preço
+      if (minPrice > 0 || maxPrice > 0) {
+        filteredProducts = filteredProducts.filter(produto => {
+          const precosPorTamanho = getPrecosPorTamanho(produto)
+          
+          // Se houver preços por tamanho e um tamanho específico selecionado
+          if (precosPorTamanho && sizeFilter !== 'all') {
+            const precoTamanho = precosPorTamanho.find(p => p.tamanho === sizeFilter)
+            if (precoTamanho) {
+              const precoFinal = precoTamanho.preco_promocional || precoTamanho.preco
+              const dentroDoMinimo = minPrice > 0 ? precoFinal >= minPrice : true
+              const dentroDoMaximo = maxPrice > 0 ? precoFinal <= maxPrice : true
+              return dentroDoMinimo && dentroDoMaximo
+            }
+          }
+          
+          // Caso contrário, usar o preço base do produto
+          const precoFinal = produto.preco_promocional || produto.preco
+          const dentroDoMinimo = minPrice > 0 ? precoFinal >= minPrice : true
+          const dentroDoMaximo = maxPrice > 0 ? precoFinal <= maxPrice : true
+          return dentroDoMinimo && dentroDoMaximo
+        })
+      }
+      
       setProducts(filteredProducts)
     } catch (error) {
       console.error('Erro ao carregar produtos:', error)
@@ -60,6 +89,39 @@ export default function Products() {
       setSelectedColor(produto.cores?.[0] || '')
       setSelectedSize(produto.tamanhos?.[0] || '')
     }
+  }
+
+  const handlePriceFilter = () => {
+    const minPriceValue = parseFloat(minPriceInputValue)
+    const maxPriceValue = parseFloat(maxPriceInputValue)
+    
+    if (!isNaN(minPriceValue) && minPriceValue > 0) {
+      setMinPrice(minPriceValue)
+    } else if (minPriceInputValue === '' || minPriceInputValue === '0') {
+      setMinPrice(0)
+    }
+    
+    if (!isNaN(maxPriceValue) && maxPriceValue > 0) {
+      setMaxPrice(maxPriceValue)
+    } else if (maxPriceInputValue === '' || maxPriceInputValue === '0') {
+      setMaxPrice(0)
+    }
+  }
+
+  const clearPriceFilter = () => {
+    setMinPrice(0)
+    setMaxPrice(0)
+    setMinPriceInputValue('')
+    setMaxPriceInputValue('')
+  }
+
+  const clearAllFilters = () => {
+    setFilter('all')
+    setSizeFilter('all')
+    setMinPrice(0)
+    setMaxPrice(0)
+    setMinPriceInputValue('')
+    setMaxPriceInputValue('')
   }
 
   // Função auxiliar para obter preços por tamanho parseados
@@ -144,105 +206,286 @@ export default function Products() {
       {/* Filters Section */}
       <section className="section bg-white">
         <div className="container-custom">
-          {/* Filtros de Status */}
-          <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
-            <span className="text-neutral-700 font-medium">Filtrar por:</span>
+          {/* Botão de Filtros */}
+          <div className="flex flex-col items-center gap-4 mb-8">
             <button
-              onClick={() => setFilter('all')}
-              className={`px-8 py-3 rounded-full font-medium transition-all duration-300 ${
-                filter === 'all'
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg scale-105'
-                  : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-blue-300'
-              }`}
+              onClick={() => setShowFilters(!showFilters)}
+              className="btn btn-primary btn-lg flex items-center gap-3 shadow-lg hover:shadow-xl transition-all"
             >
-              Todos os Produtos
+              <SlidersHorizontal className="w-5 h-5" />
+              {showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros'}
             </button>
-            <button
-              onClick={() => setFilter('available')}
-              className={`px-8 py-3 rounded-full font-medium transition-all duration-300 ${
-                filter === 'available'
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg scale-105'
-                  : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-blue-300'
-              }`}
-            >
-              Disponíveis
-            </button>
-            <button
-              onClick={() => setFilter('promo')}
-              className={`px-8 py-3 rounded-full font-medium transition-all duration-300 ${
-                filter === 'promo'
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg scale-105'
-                  : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-blue-300'
-              }`}
-            >
-              Promoções
-            </button>
-            <button
-              onClick={() => setFilter('featured')}
-              className={`px-8 py-3 rounded-full font-medium transition-all duration-300 ${
-                filter === 'featured'
-                  ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg scale-105'
-                  : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-blue-300'
-              }`}
-            >
-              Em Destaque
-            </button>
+
+            {/* Indicadores de Filtros Ativos */}
+            {(filter !== 'all' || sizeFilter !== 'all' || minPrice > 0 || maxPrice > 0) && (
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <span className="text-sm text-neutral-600 font-medium">Filtros ativos:</span>
+                
+                {filter !== 'all' && (
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                    {filter === 'available' && 'Disponíveis'}
+                    {filter === 'featured' && 'Em Destaque'}
+                    {filter === 'promo' && 'Promoções'}
+                    <button
+                      onClick={() => setFilter('all')}
+                      className="hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                
+                {sizeFilter !== 'all' && (
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
+                    Tamanho: {sizeFilter}
+                    <button
+                      onClick={() => setSizeFilter('all')}
+                      className="hover:bg-purple-200 rounded-full p-0.5 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                
+                {(minPrice > 0 || maxPrice > 0) && (
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                    {minPrice > 0 && maxPrice > 0 
+                      ? `R$ ${minPrice.toFixed(2)} - R$ ${maxPrice.toFixed(2)}`
+                      : minPrice > 0 
+                        ? `A partir de R$ ${minPrice.toFixed(2)}`
+                        : `Até R$ ${maxPrice.toFixed(2)}`
+                    }
+                    <button
+                      onClick={clearPriceFilter}
+                      className="hover:bg-green-200 rounded-full p-0.5 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+                
+                <button
+                  onClick={clearAllFilters}
+                  className="text-sm text-red-600 hover:text-red-700 font-medium underline"
+                >
+                  Limpar todos
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Filtros de Tamanho */}
-          <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
-            <span className="text-neutral-700 font-medium">Tamanho:</span>
-            <button
-              onClick={() => setSizeFilter('all')}
-              className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
-                sizeFilter === 'all'
-                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg scale-105'
-                  : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-purple-300'
-              }`}
-            >
-              Todos
-            </button>
-            <button
-              onClick={() => setSizeFilter('Solteiro')}
-              className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
-                sizeFilter === 'Solteiro'
-                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg scale-105'
-                  : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-purple-300'
-              }`}
-            >
-              Solteiro
-            </button>
-            <button
-              onClick={() => setSizeFilter('Casal')}
-              className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
-                sizeFilter === 'Casal'
-                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg scale-105'
-                  : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-purple-300'
-              }`}
-            >
-              Casal
-            </button>
-            <button
-              onClick={() => setSizeFilter('Queen')}
-              className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
-                sizeFilter === 'Queen'
-                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg scale-105'
-                  : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-purple-300'
-              }`}
-            >
-              Queen
-            </button>
-            <button
-              onClick={() => setSizeFilter('King')}
-              className={`px-6 py-2 rounded-full font-medium transition-all duration-300 ${
-                sizeFilter === 'King'
-                  ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg scale-105'
-                  : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-purple-300'
-              }`}
-            >
-              King
-            </button>
-          </div>
+          {/* Painel de Filtros */}
+          {showFilters && (
+            <div className="bg-gradient-to-br from-neutral-50 to-neutral-100 rounded-3xl p-8 mb-12 shadow-lg border border-neutral-200 animate-in fade-in slide-in-from-top-4 duration-300">
+              {/* Filtros de Status */}
+              <div className="mb-8">
+                <h3 className="text-lg font-bold text-neutral-900 mb-4 flex items-center gap-2">
+                  <Tag className="w-5 h-5 text-blue-600" />
+                  Tipo de Produto
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={() => setFilter('all')}
+                    className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                      filter === 'all'
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg scale-105'
+                        : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-blue-300'
+                    }`}
+                  >
+                    Todos os Produtos
+                  </button>
+                  <button
+                    onClick={() => setFilter('available')}
+                    className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                      filter === 'available'
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg scale-105'
+                        : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-blue-300'
+                    }`}
+                  >
+                    Disponíveis
+                  </button>
+                  <button
+                    onClick={() => setFilter('promo')}
+                    className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                      filter === 'promo'
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg scale-105'
+                        : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-blue-300'
+                    }`}
+                  >
+                    Promoções
+                  </button>
+                  <button
+                    onClick={() => setFilter('featured')}
+                    className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                      filter === 'featured'
+                        ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg scale-105'
+                        : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-blue-300'
+                    }`}
+                  >
+                    Em Destaque
+                  </button>
+                </div>
+              </div>
+
+              {/* Filtros de Tamanho */}
+              <div className="mb-8">
+                <h3 className="text-lg font-bold text-neutral-900 mb-4 flex items-center gap-2">
+                  <SlidersHorizontal className="w-5 h-5 text-purple-600" />
+                  Tamanho
+                </h3>
+                <div className="flex flex-wrap gap-3">
+                  <button
+                    onClick={() => setSizeFilter('all')}
+                    className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                      sizeFilter === 'all'
+                        ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg scale-105'
+                        : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-purple-300'
+                    }`}
+                  >
+                    Todos
+                  </button>
+                  <button
+                    onClick={() => setSizeFilter('Solteiro')}
+                    className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                      sizeFilter === 'Solteiro'
+                        ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg scale-105'
+                        : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-purple-300'
+                    }`}
+                  >
+                    Solteiro
+                  </button>
+                  <button
+                    onClick={() => setSizeFilter('Casal')}
+                    className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                      sizeFilter === 'Casal'
+                        ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg scale-105'
+                        : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-purple-300'
+                    }`}
+                  >
+                    Casal
+                  </button>
+                  <button
+                    onClick={() => setSizeFilter('Queen')}
+                    className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                      sizeFilter === 'Queen'
+                        ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg scale-105'
+                        : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-purple-300'
+                    }`}
+                  >
+                    Queen
+                  </button>
+                  <button
+                    onClick={() => setSizeFilter('King')}
+                    className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                      sizeFilter === 'King'
+                        ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg scale-105'
+                        : 'bg-white text-neutral-700 hover:bg-neutral-50 border-2 border-neutral-200 hover:border-purple-300'
+                    }`}
+                  >
+                    King
+                  </button>
+                </div>
+              </div>
+
+              {/* Filtro de Preço */}
+              <div>
+                <h3 className="text-lg font-bold text-neutral-900 mb-4 flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-green-600" />
+                  Faixa de Preço
+                </h3>
+                <div className="flex flex-col gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Preço Mínimo */}
+                    <div>
+                      <label htmlFor="minPrice" className="block text-sm font-medium text-neutral-700 mb-2">
+                        Preço Mínimo
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 font-medium">
+                          R$
+                        </span>
+                        <input
+                          id="minPrice"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={minPriceInputValue}
+                          onChange={(e) => {
+                            setMinPriceInputValue(e.target.value)
+                            // Se o campo for apagado, resetar o filtro automaticamente
+                            if (e.target.value === '' || e.target.value === '0') {
+                              setMinPrice(0)
+                            }
+                          }}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              handlePriceFilter()
+                            }
+                          }}
+                          placeholder="Ex: 500.00"
+                          className="w-full pl-12 pr-4 py-3 border-2 border-neutral-300 rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all text-lg"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Preço Máximo */}
+                    <div>
+                      <label htmlFor="maxPrice" className="block text-sm font-medium text-neutral-700 mb-2">
+                        Preço Máximo
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 font-medium">
+                          R$
+                        </span>
+                        <input
+                          id="maxPrice"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={maxPriceInputValue}
+                          onChange={(e) => {
+                            setMaxPriceInputValue(e.target.value)
+                            // Se o campo for apagado, resetar o filtro automaticamente
+                            if (e.target.value === '' || e.target.value === '0') {
+                              setMaxPrice(0)
+                            }
+                          }}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              handlePriceFilter()
+                            }
+                          }}
+                          placeholder="Ex: 1300.00"
+                          className="w-full pl-12 pr-4 py-3 border-2 border-neutral-300 rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 outline-none transition-all text-lg"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    <button
+                      onClick={handlePriceFilter}
+                      className="btn bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 shadow-lg whitespace-nowrap"
+                    >
+                      Aplicar Filtro
+                    </button>
+                    {(minPrice > 0 || maxPrice > 0) && (
+                      <button
+                        onClick={clearPriceFilter}
+                        className="btn bg-neutral-200 text-neutral-700 hover:bg-neutral-300 whitespace-nowrap"
+                      >
+                        Limpar Preços
+                      </button>
+                    )}
+                  </div>
+                  
+                  <p className="text-sm text-neutral-600">
+                    💡 Dica: Defina uma faixa de preço para ver todos os colchões disponíveis dentro do seu orçamento
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Products Grid */}
           {loading ? (
