@@ -179,17 +179,16 @@ export default function Products() {
                         className="product-image"
                         loading="lazy"
                       />
-                      {produto.destaque && (
+                      {!produto.estoque ? (
+                        <div className="product-badge">
+                          <span className="badge badge-out">Esgotado</span>
+                        </div>
+                      ) : produto.destaque && (
                         <div className="product-badge">
                           <span className="badge badge-new">
                             <Star className="w-4 h-4 fill-current" />
                             Destaque
                           </span>
-                        </div>
-                      )}
-                      {!produto.estoque && (
-                        <div className="product-badge">
-                          <span className="badge badge-out">Esgotado</span>
                         </div>
                       )}
                     </div>
