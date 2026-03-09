@@ -1,84 +1,107 @@
-# Loja de Colchões - React + TypeScript + Supabase
+# Loja de Colchões - E-commerce Moderno
 
-Website moderno e completo para loja de colchões com painel administrativo.
+E-commerce completo para venda de colchões com landing page moderna, catálogo de produtos e painel administrativo.
 
 ## 🚀 Tecnologias
 
-- **React 18** - Framework UI
+- **React 18** - Framework frontend
 - **TypeScript** - Tipagem estática
-- **Vite** - Build tool ultrarrápido
-- **Tailwind CSS** - Estilização utility-first
-- **Lucide React** - Ícones modernos
-- **Supabase** - Backend completo (Database + Auth)
-- **React Router** - Navegação entre páginas
+- **Vite** - Build tool e dev server
+- **React Router** - Roteamento
+- **Tailwind CSS** - Estilização
+- **Supabase** - Backend (Database + Auth)
+- **Lucide React** - Ícones
+- **Vitest** - Testes unitários
 
-## ✨ Funcionalidades
+## 📋 Funcionalidades
 
-### Frontend (Público)
+### Landing Page
+- Hero section com call-to-action
+- Seção de produtos em destaque
+- Benefícios e diferenciais
+- Depoimentos em carrossel
+- Dicas educacionais
+- Banner promocional
+- Botão flutuante do WhatsApp
 
-- ✅ **Home** - Banner hero, produtos em destaque, sobre a loja
-- ✅ **Produtos** - Catálogo completo com filtros
-- ✅ **Detalhes do Produto** - Modal com seleção de cor e tamanho
-- ✅ **Integração WhatsApp** - Mensagem automática com dados do produto
-- ✅ **Sobre Nós** - História, missão, visão e valores
-- ✅ **Design Responsivo** - Mobile-first, otimizado para todos os dispositivos
+### Catálogo de Produtos
+- Listagem completa de produtos
+- Filtros por categoria e preço
+- Modal de detalhes do produto
+- Seleção de cor e tamanho
+- Integração com WhatsApp
 
-### Painel Admin (Protegido)
+### Painel Administrativo
+- Dashboard com estatísticas
+- Gerenciamento de produtos (CRUD)
+- Upload de imagens
+- Ações rápidas (estoque, destaque, promoção)
+- Autenticação segura
 
-- ✅ **Login Seguro** - Autenticação via Supabase
-- ✅ **Dashboard** - Lista de todos os produtos
-- ✅ **CRUD Completo** - Criar, editar e deletar produtos
-- ✅ **Upload de Imagens** - Via URL externa (Imgur, Cloudinary)
-- ✅ **Gerenciar Status** - Promoção, destaque, estoque
-- ✅ **Interface Intuitiva** - Formulários validados e feedback visual
-
-### Fluxo de Compra
-
-1. Cliente navega pelos produtos
-2. Clica em um produto de interesse
-3. Seleciona cor e tamanho desejados
-4. Clica em "Falar com Vendedor no WhatsApp"
-5. Mensagem automática é gerada com todos os detalhes
-6. Cliente é redirecionado para WhatsApp
-
-## 📦 Instalação
+## 🛠️ Instalação
 
 ### Pré-requisitos
-
-- Node.js 18+ instalado
-- Conta no Supabase (gratuita)
+- Node.js 18+
+- npm ou yarn
+- Conta no Supabase
 
 ### Passo 1: Clone o repositório
-
 ```bash
-git clone https://github.com/seu-usuario/loja-colchoes.git
-cd loja-colchoes
+git clone <seu-repositorio>
+cd loja-colchoes-react
 ```
 
 ### Passo 2: Instale as dependências
-
 ```bash
 npm install
 ```
 
 ### Passo 3: Configure o Supabase
 
-Siga o guia completo em **[SUPABASE_SETUP.md](./SUPABASE_SETUP.md)**
+1. Crie um projeto em [supabase.com](https://supabase.com)
+2. Crie a tabela `produtos`:
 
-Resumo:
-1. Crie um projeto no Supabase
-2. Crie a tabela `produtos`
-3. Configure Row Level Security
-4. Crie um usuário admin
-5. Copie as credenciais
+```sql
+CREATE TABLE produtos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMPTZ DEFAULT now(),
+  nome TEXT NOT NULL,
+  descricao TEXT NOT NULL,
+  preco NUMERIC NOT NULL,
+  preco_promocional NUMERIC,
+  promocao BOOLEAN DEFAULT false,
+  destaque BOOLEAN DEFAULT false,
+  estoque BOOLEAN DEFAULT true,
+  cores TEXT[] NOT NULL DEFAULT '{}',
+  tamanhos TEXT[] NOT NULL DEFAULT '{}',
+  imagem TEXT
+);
+
+-- Habilitar RLS
+ALTER TABLE produtos ENABLE ROW LEVEL SECURITY;
+
+-- Permitir leitura pública
+CREATE POLICY "Permitir leitura pública"
+ON produtos FOR SELECT TO public USING (true);
+
+-- Permitir escrita autenticada
+CREATE POLICY "Permitir escrita para usuários autenticados"
+ON produtos FOR ALL TO authenticated USING (true) WITH CHECK (true);
+
+-- Configurar replica identity para permitir delete
+ALTER TABLE produtos REPLICA IDENTITY DEFAULT;
+```
+
+3. Crie um usuário admin em Authentication > Users
 
 ### Passo 4: Configure as variáveis de ambiente
 
 Crie um arquivo `.env` na raiz do projeto:
 
 ```env
-VITE_SUPABASE_URL=https://xxxxx.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGc...
+VITE_SUPABASE_URL=https://seu-projeto.supabase.co
+VITE_SUPABASE_ANON_KEY=sua-chave-anon
+VITE_WHATSAPP_NUMBER=5511999999999
 ```
 
 ### Passo 5: Execute o projeto
@@ -87,177 +110,79 @@ VITE_SUPABASE_ANON_KEY=eyJhbGc...
 npm run dev
 ```
 
-Acesse: **http://localhost:5173**
+Acesse: `http://localhost:5173`
 
-## 🏗️ Estrutura do Projeto
+## 📦 Scripts Disponíveis
+
+```bash
+npm run dev          # Inicia servidor de desenvolvimento
+npm run build        # Build para produção
+npm run preview      # Preview do build
+npm run lint         # Executa linter
+npm run test         # Executa testes
+npm run test:watch   # Testes em modo watch
+npm run test:ui      # Interface visual dos testes
+```
+
+## 🌐 Deploy
+
+### Vercel (Recomendado)
+
+1. Faça push do código para GitHub
+2. Importe o projeto no [Vercel](https://vercel.com)
+3. Configure as variáveis de ambiente:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_WHATSAPP_NUMBER`
+4. Deploy automático!
+
+O arquivo `vercel.json` já está configurado para SPA routing.
+
+### Outras Plataformas
+
+O projeto é compatível com Netlify, Cloudflare Pages e outras plataformas que suportam SPAs.
+
+## 🔐 Acesso Admin
+
+- **Login**: `/admin/login`
+- **Dashboard**: `/admin`
+
+Use as credenciais criadas no Supabase para acessar.
+
+## 📱 Estrutura de Rotas
 
 ```
-src/
-├── components/          # Componentes reutilizáveis
-│   ├── Layout.tsx      # Layout principal com navbar e footer
-│   ├── Navbar.tsx      # Barra de navegação
-│   ├── Footer.tsx      # Rodapé
-│   ├── ProductCard.tsx # Card de produto
-│   ├── ProductModal.tsx # Modal de detalhes do produto
-│   └── ProductForm.tsx # Formulário de produto (admin)
-├── pages/              # Páginas da aplicação
-│   ├── Home.tsx        # Página inicial
-│   ├── Products.tsx    # Catálogo de produtos
-│   ├── About.tsx       # Sobre nós
-│   ├── Login.tsx       # Login do admin
-│   └── Admin.tsx       # Painel administrativo
-├── lib/                # Configurações e utilitários
-│   ├── supabase.ts     # Cliente Supabase
-│   └── database.types.ts # Tipos TypeScript do banco
-├── App.tsx             # Componente raiz com rotas
-├── main.tsx            # Entry point
-└── index.css           # Estilos globais + Tailwind
+/                    → Landing Page
+/produtos            → Catálogo de produtos
+/sobre               → Página sobre a empresa
+/admin/login         → Login administrativo
+/admin               → Dashboard admin
 ```
 
 ## 🎨 Personalização
 
-### Alterar Cores
+### Cores
+Edite `src/index.css` para alterar o esquema de cores.
 
-Edite `tailwind.config.js`:
+### WhatsApp
+Configure o número no arquivo `.env` ou em `src/lib/whatsapp.ts`.
 
-```javascript
-theme: {
-  extend: {
-    colors: {
-      primary: {
-        // Suas cores aqui
-      },
-    },
-  },
-},
-```
+### Conteúdo
+Edite os componentes em `src/components/landing/` para personalizar textos e imagens.
 
-### Configurar WhatsApp
+## 🧪 Testes
 
-Edite os arquivos:
-- `src/components/ProductModal.tsx` (linha 8)
-- `src/pages/About.tsx` (linha 3)
-
-```typescript
-const WHATSAPP_NUMBER = '5511999999999' // Seu número
-```
-
-### Alterar Logo
-
-Edite `src/components/Navbar.tsx` (linha 13):
-
-```tsx
-<Link to="/" className="text-2xl font-bold">
-  Seu Logo Aqui
-</Link>
-```
-
-## 📱 Hospedagem de Imagens
-
-Como o projeto não usa storage próprio, hospede as imagens em:
-
-- **Imgur** (recomendado): https://imgur.com/upload
-- **Cloudinary**: https://cloudinary.com/
-- **ImgBB**: https://imgbb.com/
-
-Consulte **[HOSPEDAGEM_IMAGENS.md](./HOSPEDAGEM_IMAGENS.md)** para detalhes.
-
-## 🚀 Deploy
-
-### Vercel (Recomendado)
+O projeto inclui testes unitários e property-based tests:
 
 ```bash
-npm install -g vercel
-vercel
+npm run test        # Executa todos os testes
+npm run test:ui     # Interface visual
 ```
-
-Configure as variáveis de ambiente no dashboard.
-
-### Netlify
-
-```bash
-npm install -g netlify-cli
-netlify deploy --prod
-```
-
-### Build Manual
-
-```bash
-npm run build
-```
-
-Os arquivos estarão em `dist/`
-
-## 🗄️ Banco de Dados
-
-### Tabela: produtos
-
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| id | uuid | ID único (gerado automaticamente) |
-| created_at | timestamptz | Data de criação |
-| nome | text | Nome do produto |
-| descricao | text | Descrição detalhada |
-| preco | numeric | Preço normal |
-| preco_promocional | numeric | Preço em promoção (opcional) |
-| promocao | boolean | Se está em promoção |
-| destaque | boolean | Se aparece na home |
-| estoque | boolean | Se está disponível |
-| cores | text[] | Array de cores disponíveis |
-| tamanhos | text[] | Array de tamanhos disponíveis |
-| imagem | text | URL da imagem |
-
-## 🔒 Segurança
-
-- ✅ Row Level Security (RLS) habilitado
-- ✅ Leitura pública de produtos
-- ✅ Escrita apenas para usuários autenticados
-- ✅ Senhas criptografadas pelo Supabase
-- ✅ Tokens JWT para autenticação
-
-## 📝 Scripts Disponíveis
-
-```bash
-npm run dev      # Inicia servidor de desenvolvimento
-npm run build    # Build para produção
-npm run preview  # Preview do build
-npm run lint     # Verifica código com ESLint
-```
-
-## 🐛 Problemas Comuns
-
-### Erro: "Invalid API key"
-- Verifique o arquivo `.env`
-- Reinicie o servidor (`npm run dev`)
-
-### Produtos não aparecem
-- Verifique as políticas de RLS no Supabase
-- Abra o console do navegador para ver erros
-
-### Login não funciona
-- Verifique se criou o usuário no Supabase
-- Confirme que o usuário está ativo
-
-## 📚 Documentação
-
-- **[SUPABASE_SETUP.md](./SUPABASE_SETUP.md)** - Configuração completa do Supabase
-- **[HOSPEDAGEM_IMAGENS.md](./HOSPEDAGEM_IMAGENS.md)** - Como hospedar imagens
-- **[PRODUTOS_EXEMPLO.md](./PRODUTOS_EXEMPLO.md)** - Produtos prontos para teste
-
-## 🤝 Contribuindo
-
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull requests.
 
 ## 📄 Licença
 
-MIT License - veja o arquivo LICENSE para detalhes.
+Este projeto é privado e proprietário.
 
-## 🆘 Suporte
+## 🤝 Suporte
 
-- **Documentação Supabase**: https://supabase.com/docs
-- **Documentação React**: https://react.dev/
-- **Documentação Tailwind**: https://tailwindcss.com/docs
-
----
-
-**Desenvolvido com ❤️ usando React + TypeScript + Supabase**
+Para dúvidas ou problemas, entre em contato com o desenvolvedor.
