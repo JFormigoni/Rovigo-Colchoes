@@ -117,13 +117,15 @@ export default function Admin() {
 
   async function togglePromo(produto: Produto) {
     try {
-      // Alternar entre preço normal e preço promocional
-      // Se já tem preço promocional, remove (volta para preço normal)
-      // Se não tem, não faz nada (precisa editar o produto para definir)
-      const newValue = produto.preco_promocional ? null : produto.preco_promocional
+      // Se tem preço promocional, remove (volta para preço normal)
+      // Se não tem preço promocional, não faz nada (usuário precisa editar o produto)
+      if (!produto.preco_promocional) {
+        alert('Este produto não tem preço promocional cadastrado. Use o botão Editar para adicionar um preço promocional.')
+        return
+      }
 
       const { error } = await (supabase.from('produtos') as any)
-        .update({ preco_promocional: newValue })
+        .update({ preco_promocional: null })
         .eq('id', produto.id)
 
       if (error) {
@@ -134,7 +136,7 @@ export default function Admin() {
       // Atualizar o produto localmente para feedback imediato
       setProducts(products.map(p => 
         p.id === produto.id 
-          ? { ...p, preco_promocional: newValue } 
+          ? { ...p, preco_promocional: null } 
           : p
       ))
     } catch (error) {
@@ -352,7 +354,7 @@ export default function Admin() {
                                 ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' 
                                 : 'bg-neutral-100 text-neutral-400 hover:bg-neutral-200'
                             }`}
-                            title={produto.preco_promocional ? 'Remover promoção' : 'Adicionar promoção (10% off)'}
+                            title={produto.preco_promocional ? 'Remover promoção' : 'Sem preço promocional (edite o produto)'}
                           >
                             <Tag size={18} className={produto.preco_promocional ? 'fill-current' : ''} />
                           </button>
