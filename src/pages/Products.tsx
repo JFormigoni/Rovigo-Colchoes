@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { MessageCircle, Star, Tag, X, SlidersHorizontal, DollarSign } from 'lucide-react'
+import { MessageCircle, Star, Tag, X, SlidersHorizontal, DollarSign, Search } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import type { Produto, TamanhoPrecificacao } from '@/lib/database.types'
 import { openWhatsApp } from '@/lib/whatsapp'
@@ -17,10 +17,11 @@ export default function Products() {
   const [selectedProduct, setSelectedProduct] = useState<Produto | null>(null)
   const [selectedColor, setSelectedColor] = useState<string>('')
   const [selectedSize, setSelectedSize] = useState<string>('')
+  const [searchQuery, setSearchQuery] = useState<string>('')
 
   useEffect(() => {
     loadProducts()
-  }, [filter, sizeFilter, minPrice, maxPrice])
+  }, [filter, sizeFilter, minPrice, maxPrice, searchQuery])
 
   async function loadProducts() {
     try {
@@ -43,6 +44,15 @@ export default function Products() {
       if (error) throw error
       
       let filteredProducts = (data || []) as Produto[]
+      
+      // Filtrar por pesquisa
+      if (searchQuery.trim()) {
+        const query = searchQuery.toLowerCase().trim()
+        filteredProducts = filteredProducts.filter(produto => 
+          produto.nome.toLowerCase().includes(query) ||
+          produto.descricao.toLowerCase().includes(query)
+        )
+      }
       
       // Filtrar por tamanho se selecionado
       if (sizeFilter !== 'all') {
@@ -122,6 +132,7 @@ export default function Products() {
     setMaxPrice(0)
     setMinPriceInputValue('')
     setMaxPriceInputValue('')
+    setSearchQuery('')
   }
 
   // Função auxiliar para obter preços por tamanho parseados
@@ -206,20 +217,55 @@ export default function Products() {
       {/* Filters Section */}
       <section className="section bg-white">
         <div className="container-custom">
-          {/* Botão de Filtros */}
-          <div className="flex flex-col items-center gap-4 mb-8">
+          {/* Search and Filter Button */}
+          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 mb-8">
+            {/* Search Bar */}
+            <div className="flex-1 relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Pesquisar produtos..."
+                className="w-full pl-12 pr-12 py-3 text-base border-2 border-neutral-300 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-neutral-100 rounded-full transition-colors"
+                  aria-label="Limpar pesquisa"
+                >
+                  <X className="w-4 h-4 text-neutral-500" />
+                </button>
+              )}
+            </div>
+
+            {/* Filter Button */}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="btn btn-primary btn-lg flex items-center gap-3 shadow-lg hover:shadow-xl transition-all"
+              className="btn btn-primary flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all whitespace-nowrap px-6"
             >
               <SlidersHorizontal className="w-5 h-5" />
-              {showFilters ? 'Ocultar Filtros' : 'Mostrar Filtros'}
+              {showFilters ? 'Ocultar' : 'Filtros'}
             </button>
+          </div>
 
-            {/* Indicadores de Filtros Ativos */}
-            {(filter !== 'all' || sizeFilter !== 'all' || minPrice > 0 || maxPrice > 0) && (
-              <div className="flex flex-wrap items-center justify-center gap-3">
+          {/* Indicadores de Filtros Ativos */}
+          {(filter !== 'all' || sizeFilter !== 'all' || minPrice > 0 || maxPrice > 0 || searchQuery) && (
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-8">
                 <span className="text-sm text-neutral-600 font-medium">Filtros ativos:</span>
+                
+                {searchQuery && (
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">
+                    Pesquisa: "{searchQuery.length > 20 ? searchQuery.substring(0, 20) + '...' : searchQuery}"
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="hover:bg-yellow-200 rounded-full p-0.5 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
                 
                 {filter !== 'all' && (
                   <span className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
@@ -272,7 +318,6 @@ export default function Products() {
                 </button>
               </div>
             )}
-          </div>
 
           {/* Painel de Filtros */}
           {showFilters && (
