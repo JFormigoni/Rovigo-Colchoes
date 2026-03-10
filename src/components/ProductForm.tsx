@@ -60,6 +60,19 @@ export default function ProductForm({ produto, onClose }: ProductFormProps) {
     }
   }, [produto])
 
+  // Marcar automaticamente como promoção quando há preço promocional
+  useEffect(() => {
+    if (usarPrecoPorTamanho) {
+      // Verificar se algum tamanho tem preço promocional
+      const temPrecoPromocional = precosPorTamanho.some(p => p.preco_promocional && p.preco_promocional > 0)
+      setPromocao(temPrecoPromocional)
+    } else {
+      // Verificar preço promocional geral
+      const temPrecoPromocional = Boolean(precoPromocional && parseFloat(precoPromocional) > 0)
+      setPromocao(temPrecoPromocional)
+    }
+  }, [precoPromocional, precosPorTamanho, usarPrecoPorTamanho])
+
   function toggleTamanho(tamanho: string) {
     setTamanhosSelecionados((prev) => {
       const isRemoving = prev.includes(tamanho)
@@ -506,9 +519,15 @@ export default function ProductForm({ produto, onClose }: ProductFormProps) {
                   type="checkbox"
                   checked={promocao}
                   onChange={(e) => setPromocao(e.target.checked)}
-                  className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500"
+                  disabled={Boolean(precoPromocional && parseFloat(precoPromocional) > 0) || precosPorTamanho.some(p => p.preco_promocional && p.preco_promocional > 0)}
+                  className="w-4 h-4 text-primary-600 rounded focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
                 />
-                <span className="font-medium">Em Promoção</span>
+                <span className="font-medium">
+                  Em Promoção
+                  {(Boolean(precoPromocional && parseFloat(precoPromocional) > 0) || precosPorTamanho.some(p => p.preco_promocional && p.preco_promocional > 0)) && (
+                    <span className="text-xs text-blue-600 ml-2">(automático)</span>
+                  )}
+                </span>
               </label>
 
               <label className="flex items-center gap-2 cursor-pointer">
