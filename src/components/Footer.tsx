@@ -23,7 +23,7 @@ export default function Footer() {
               </p>
               <p className="flex items-center gap-2">
                 <Phone className="w-5 h-5 text-white" aria-hidden="true" />
-                <span className="text-white">(47) 99779-4812</span>
+                <span className="text-white">(41) 99554-3296</span>
               </p>
               <p className="flex items-center gap-2">
                 <Mail className="w-5 h-5 text-white" aria-hidden="true" />
