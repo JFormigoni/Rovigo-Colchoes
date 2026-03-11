@@ -25,7 +25,7 @@ export default function LandingNavbar() {
   const handleNavigation = (path: string) => {
     navigate(path)
     setIsMobileMenuOpen(false)
-    window.scrollTo(0, 0)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
@@ -42,6 +42,7 @@ export default function LandingNavbar() {
           <Link
             to="/"
             className="text-2xl font-bold text-neutral-900 hover:text-blue-600 transition-colors"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             Rovigo Colchões
           </Link>
@@ -51,18 +52,21 @@ export default function LandingNavbar() {
             <Link
               to="/"
               className="text-neutral-700 hover:text-blue-600 transition-colors font-medium"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             >
               Home
             </Link>
             <Link
               to="/produtos"
               className="text-neutral-700 hover:text-blue-600 transition-colors font-medium"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             >
               Produtos
             </Link>
             <Link
               to="/sobre"
               className="text-neutral-700 hover:text-blue-600 transition-colors font-medium"
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             >
               Sobre
             </Link>

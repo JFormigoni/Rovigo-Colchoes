@@ -40,6 +40,7 @@ export default function Navbar() {
           <Link 
             to="/" 
             className="text-2xl font-bold text-neutral-900 hover:text-blue-600 transition-colors"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
             Rovigo Colchões
           </Link>
@@ -53,7 +54,7 @@ export default function Navbar() {
                   ? 'text-blue-600' 
                   : 'text-neutral-700 hover:text-blue-600'
               }`}
-              onClick={() => window.scrollTo(0, 0)}
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             >
               Home
             </Link>
@@ -64,7 +65,7 @@ export default function Navbar() {
                   ? 'text-blue-600' 
                   : 'text-neutral-700 hover:text-blue-600'
               }`}
-              onClick={() => window.scrollTo(0, 0)}
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             >
               Produtos
             </Link>
@@ -75,7 +76,7 @@ export default function Navbar() {
                   ? 'text-blue-600' 
                   : 'text-neutral-700 hover:text-blue-600'
               }`}
-              onClick={() => window.scrollTo(0, 0)}
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             >
               Sobre
             </Link>
@@ -111,7 +112,7 @@ export default function Navbar() {
                 }`}
                 onClick={() => {
                   setIsOpen(false)
-                  window.scrollTo(0, 0)
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
                 }}
               >
                 Home
@@ -125,7 +126,7 @@ export default function Navbar() {
                 }`}
                 onClick={() => {
                   setIsOpen(false)
-                  window.scrollTo(0, 0)
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
                 }}
               >
                 Produtos
@@ -139,7 +140,7 @@ export default function Navbar() {
                 }`}
                 onClick={() => {
                   setIsOpen(false)
-                  window.scrollTo(0, 0)
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
                 }}
               >
                 Sobre
