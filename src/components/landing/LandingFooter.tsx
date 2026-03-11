@@ -40,7 +40,7 @@ export default function LandingFooter() {
               </p>
               <p className="flex items-center gap-2">
                 <Mail className="w-5 h-5 text-white" aria-hidden="true" />
-                <span className="text-white">contato@colchoespremium.com.br</span>
+                <span className="text-white">rovigocolchoes@gmail.com</span>
               </p>
             </div>
           </div>
