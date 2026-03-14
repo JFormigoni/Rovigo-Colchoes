@@ -17,6 +17,7 @@ export default function ProductForm({ produto, onClose }: ProductFormProps) {
   const [precoPromocional, setPrecoPromocional] = useState('')
   const [cores, setCores] = useState('')
   const [imagemUrl, setImagemUrl] = useState('')
+  const [imagens, setImagens] = useState<string[]>([])
   const [tamanhosSelecionados, setTamanhosSelecionados] = useState<string[]>([])
   const [precosPorTamanho, setPrecosPorTamanho] = useState<TamanhoPrecificacao[]>([])
   const [usarPrecoPorTamanho, setUsarPrecoPorTamanho] = useState(false)
@@ -26,6 +27,7 @@ export default function ProductForm({ produto, onClose }: ProductFormProps) {
   const [loading, setLoading] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const [novaImagemUrl, setNovaImagemUrl] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -37,6 +39,15 @@ export default function ProductForm({ produto, onClose }: ProductFormProps) {
       setCores(produto.cores.join(', '))
       setImagemUrl(produto.imagem || '')
       setImagePreview(produto.imagem || null)
+      
+      // Carregar imagens adicionais se existirem
+      if (produto.imagens && Array.isArray(produto.imagens)) {
+        setImagens(produto.imagens)
+      } else if (produto.imagem) {
+        // Se só tem imagem principal, adicionar ao array
+        setImagens([produto.imagem])
+      }
+      
       setTamanhosSelecionados(produto.tamanhos)
       setPromocao(produto.promocao)
       setDestaque(produto.destaque)
@@ -169,37 +180,109 @@ export default function ProductForm({ produto, onClose }: ProductFormProps) {
     setUploadingImage(true)
 
     try {
-      // Converter para base64 para preview e armazenamento
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        const base64String = reader.result as string
-        setImagePreview(base64String)
-        setImagemUrl(base64String)
-        setUploadingImage(false)
+      // Gerar nome único para o arquivo
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`
+      const filePath = `produtos/${fileName}`
+
+      // Fazer upload para o Supabase Storage
+      const { error } = await supabase.storage
+        .from('imagens')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        })
+
+      if (error) {
+        throw error
       }
-      reader.onerror = () => {
-        alert('Erro ao ler o arquivo.')
-        setUploadingImage(false)
-      }
-      reader.readAsDataURL(file)
-    } catch (error) {
+
+      // Obter URL pública da imagem
+      const { data: { publicUrl } } = supabase.storage
+        .from('imagens')
+        .getPublicUrl(filePath)
+
+      setImagePreview(publicUrl)
+      setNovaImagemUrl(publicUrl)
+      setUploadingImage(false)
+    } catch (error: any) {
       console.error('Erro ao fazer upload:', error)
-      alert('Erro ao fazer upload da imagem.')
+      
+      let mensagemErro = 'Erro ao fazer upload da imagem.'
+      
+      if (error.message?.includes('Bucket not found')) {
+        mensagemErro = `❌ Bucket 'imagens' não encontrado no Supabase Storage!\n\n` +
+          `Por favor, configure o Storage seguindo o arquivo PASSO-A-PASSO-STORAGE.md\n\n` +
+          `Resumo:\n` +
+          `1. Acesse o Supabase Dashboard\n` +
+          `2. Vá em SQL Editor\n` +
+          `3. Execute o script criar-bucket-imagens.sql`
+      } else if (error.message?.includes('row-level security')) {
+        mensagemErro = `❌ Políticas de segurança não configuradas!\n\n` +
+          `Execute o script criar-bucket-imagens.sql no SQL Editor do Supabase.`
+      } else {
+        mensagemErro = `Erro ao fazer upload: ${error.message}`
+      }
+      
+      alert(mensagemErro)
       setUploadingImage(false)
     }
   }
 
-  function handleUrlChange(url: string) {
-    setImagemUrl(url)
-    setImagePreview(url || null)
-  }
-
   function clearImage() {
-    setImagemUrl('')
+    setNovaImagemUrl('')
     setImagePreview(null)
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
+  }
+
+  function addImageToGallery() {
+    const urlToAdd = novaImagemUrl.trim() || imagePreview
+    
+    if (!urlToAdd) {
+      alert('Por favor, adicione uma imagem primeiro.')
+      return
+    }
+
+    if (imagens.includes(urlToAdd)) {
+      alert('Esta imagem já foi adicionada.')
+      return
+    }
+
+    setImagens([...imagens, urlToAdd])
+    
+    // Se é a primeira imagem, definir como principal
+    if (!imagemUrl) {
+      setImagemUrl(urlToAdd)
+    }
+    
+    // Limpar campos
+    setNovaImagemUrl('')
+    setImagePreview(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  function removeImage(index: number) {
+    const novasImagens = imagens.filter((_, i) => i !== index)
+    setImagens(novasImagens)
+    
+    // Se removeu a imagem principal, definir a próxima como principal
+    if (index === 0 && novasImagens.length > 0) {
+      setImagemUrl(novasImagens[0])
+    } else if (novasImagens.length === 0) {
+      setImagemUrl('')
+    }
+  }
+
+  function setAsMainImage(index: number) {
+    const novasImagens = [...imagens]
+    const [imagemSelecionada] = novasImagens.splice(index, 1)
+    novasImagens.unshift(imagemSelecionada)
+    setImagens(novasImagens)
+    setImagemUrl(imagemSelecionada)
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -222,7 +305,8 @@ export default function ProductForm({ produto, onClose }: ProductFormProps) {
       promocao,
       destaque,
       estoque,
-      imagem: imagemUrl || null,
+      imagem: imagens.length > 0 ? imagens[0] : null,
+      imagens: imagens.length > 0 ? imagens : null,
       precos_por_tamanho: usarPrecoPorTamanho && precosPorTamanho.length > 0 
         ? JSON.stringify(
             // Ordenar preços por tamanho na ordem de TAMANHOS antes de salvar
@@ -343,11 +427,68 @@ export default function ProductForm({ produto, onClose }: ProductFormProps) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">
-                Imagem do Produto
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium">
+                  Imagens do Produto
+                </label>
+                {imagens.length > 0 && (
+                  <span className="text-sm text-neutral-500">
+                    {imagens.length} {imagens.length === 1 ? 'imagem' : 'imagens'}
+                  </span>
+                )}
+              </div>
               
-              {/* Preview da Imagem */}
+              {/* Galeria de Imagens */}
+              {imagens.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-sm text-neutral-600 mb-3">
+                    A primeira imagem é a principal. Arraste para reordenar ou clique em "Principal".
+                  </p>
+                  <div className="grid grid-cols-4 gap-3">
+                    {imagens.map((img, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={img}
+                          alt={`Imagem ${index + 1}`}
+                          className={`w-full h-32 object-cover rounded-lg border-2 ${
+                            index === 0 ? 'border-blue-500' : 'border-neutral-200'
+                          }`}
+                          onError={(e) => {
+                            e.currentTarget.src = 'https://via.placeholder.com/150?text=Erro'
+                          }}
+                        />
+                        {index === 0 && (
+                          <span className="absolute top-1 left-1 bg-blue-500 text-white text-xs px-2 py-1 rounded">
+                            Principal
+                          </span>
+                        )}
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-2">
+                          {index !== 0 && (
+                            <button
+                              type="button"
+                              onClick={() => setAsMainImage(index)}
+                              className="bg-blue-500 text-white text-xs px-3 py-1 rounded hover:bg-blue-600 transition-colors"
+                              title="Definir como principal"
+                            >
+                              Principal
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors"
+                            title="Remover imagem"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Preview da Nova Imagem */}
               {imagePreview && (
                 <div className="relative mb-4 inline-block">
                   <img
@@ -360,7 +501,7 @@ export default function ProductForm({ produto, onClose }: ProductFormProps) {
                     type="button"
                     onClick={clearImage}
                     className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
-                    title="Remover imagem"
+                    title="Remover preview"
                   >
                     <X size={16} />
                   </button>
@@ -369,57 +510,47 @@ export default function ProductForm({ produto, onClose }: ProductFormProps) {
 
               {/* Botões de Upload */}
               <div className="flex flex-col gap-3">
-                <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingImage}
+                  className="btn btn-primary w-full justify-center"
+                >
+                  {uploadingImage ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      <span>Fazendo Upload...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload size={20} />
+                      <span>Selecionar e Fazer Upload da Imagem</span>
+                    </>
+                  )}
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+
+                {imagePreview && (
                   <button
                     type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploadingImage}
-                    className="btn btn-secondary flex-1 justify-center"
+                    onClick={addImageToGallery}
+                    className="btn btn-secondary w-full justify-center"
                   >
-                    {uploadingImage ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
-                        <span>Carregando...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Upload size={20} />
-                        <span>Fazer Upload</span>
-                      </>
-                    )}
+                    <ImageIcon size={20} />
+                    Adicionar à Galeria
                   </button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                </div>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <div className="w-full border-t border-neutral-300"></div>
-                  </div>
-                  <div className="relative flex justify-center text-sm">
-                    <span className="px-2 bg-white text-neutral-500">ou</span>
-                  </div>
-                </div>
-
-                <div>
-                  <input
-                    type="url"
-                    value={imagemUrl.startsWith('data:') ? '' : imagemUrl}
-                    onChange={(e) => handleUrlChange(e.target.value)}
-                    className="input"
-                    placeholder="Cole a URL de uma imagem"
-                    disabled={uploadingImage}
-                  />
-                  <p className="text-sm text-neutral-500 mt-1">
-                    <ImageIcon size={14} className="inline mr-1" />
-                    Aceita imagens até 5MB (JPG, PNG, WebP)
-                  </p>
-                </div>
+                )}
+                
+                <p className="text-sm text-neutral-500 text-center">
+                  <ImageIcon size={14} className="inline mr-1" />
+                  Aceita imagens até 5MB (JPG, PNG, WebP)
+                </p>
               </div>
             </div>
 

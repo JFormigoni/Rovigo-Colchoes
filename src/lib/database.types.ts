@@ -29,6 +29,7 @@ export interface Database {
           cores: string[]
           tamanhos: string[]
           imagem: string | null
+          imagens: string[] | null
           precos_por_tamanho: Json | null
         }
         Insert: {
@@ -44,6 +45,7 @@ export interface Database {
           cores: string[]
           tamanhos: string[]
           imagem?: string | null
+          imagens?: string[] | null
           precos_por_tamanho?: Json | null
         }
         Update: {
@@ -59,6 +61,7 @@ export interface Database {
           cores?: string[]
           tamanhos?: string[]
           imagem?: string | null
+          imagens?: string[] | null
           precos_por_tamanho?: Json | null
         }
       }
