@@ -23,25 +23,34 @@ export default function PromotionalBanner() {
       <div className="promo-content">
         <h2 
           id="promo-heading"
-          className="promo-title"
+          className="promo-title mb-12"
         >
           Oferta Especial
         </h2>
         
-        <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-8 text-white">
-          <div className="flex items-center gap-3">
-            <Truck className="w-8 h-8 text-white" aria-hidden="true" />
-            <span className="text-xl text-white">Frete Grátis</span>
+        <div className="flex flex-col md:flex-row justify-center items-center gap-6 mb-12 text-white">
+          <div className="flex flex-col items-center gap-2 text-center min-w-[200px]">
+            <div className="flex items-center gap-3">
+              <Truck className="w-8 h-8 text-white" aria-hidden="true" />
+              <span className="text-xl text-white font-semibold">Frete Grátis</span>
+            </div>
+            <span className="text-sm text-white/90">Curitiba, Região Metropolitana e Joinville</span>
           </div>
           
-          <div className="flex items-center gap-3">
-            <Tag className="w-8 h-8 text-white" aria-hidden="true" />
-            <span className="text-xl text-white">Descontos Especiais</span>
+          <div className="flex flex-col items-center gap-2 text-center min-w-[200px]">
+            <div className="flex items-center gap-3">
+              <Tag className="w-8 h-8 text-white" aria-hidden="true" />
+              <span className="text-xl text-white font-semibold">Descontos Especiais</span>
+            </div>
+            <span className="text-sm text-white/90">Condições exclusivas para você</span>
           </div>
           
-          <div className="flex items-center gap-3">
-            <Moon className="w-8 h-8 text-white" aria-hidden="true" />
-            <span className="text-xl text-white">Garantia Estendida</span>
+          <div className="flex flex-col items-center gap-2 text-center min-w-[200px]">
+            <div className="flex items-center gap-3">
+              <Moon className="w-8 h-8 text-white" aria-hidden="true" />
+              <span className="text-xl text-white font-semibold">Garantia Estendida</span>
+            </div>
+            <span className="text-sm text-white/90">10 anos de garantia em todos os produtos</span>
           </div>
         </div>
         

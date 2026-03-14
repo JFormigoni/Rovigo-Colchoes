@@ -60,7 +60,7 @@ export default function LandingFooter() {
                 <Facebook className="w-6 h-6 text-white" />
               </a>
               <a 
-                href="https://instagram.com" 
+                href="https://www.instagram.com/geisa.rovigo66?igsh=MTBsbHoxdzN0a3U5MQ==" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="footer-social"

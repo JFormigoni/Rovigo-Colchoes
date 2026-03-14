@@ -21,7 +21,7 @@ export default function HeroSection() {
       {/* Conteúdo */}
       <div className="relative z-10 container-custom text-center">
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight text-white drop-shadow-2xl">
-          Durma Melhor, Viva Melhor
+          O Conforto Que Abraça Seus Sonhos
         </h1>
         
         <p className="text-xl md:text-2xl mb-10 max-w-3xl mx-auto text-white/95 drop-shadow-lg font-light">

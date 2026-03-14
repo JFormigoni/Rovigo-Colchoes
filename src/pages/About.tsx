@@ -1,4 +1,4 @@
-import { MessageCircle, Heart, Award, Users, Target, Shield, Clock, Star } from 'lucide-react'
+import { MessageCircle, Heart, Award, Users, Target, Shield, Clock } from 'lucide-react'
 import { openWhatsApp } from '@/lib/whatsapp'
 
 export default function About() {
@@ -97,7 +97,7 @@ export default function About() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Qualidade Garantida */}
             <div className="text-center">
               <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl mb-6 mx-auto">
@@ -105,7 +105,7 @@ export default function About() {
               </div>
               <h3 className="text-xl font-bold mb-3 text-neutral-900">Qualidade Garantida</h3>
               <p className="text-neutral-600">
-                10 anos de garantia em todos os nossos produtos
+                Produtos com 10 anos de garantia, assegurando qualidade e durabilidade
               </p>
             </div>
 
@@ -116,7 +116,7 @@ export default function About() {
               </div>
               <h3 className="text-xl font-bold mb-3 text-neutral-900">Entrega Rápida</h3>
               <p className="text-neutral-600">
-                Entrega e instalação gratuita em até 48h
+                Entrega e instalação gratuitas para Curitiba, Região Metropolitana e Joinville
               </p>
             </div>
 
@@ -128,17 +128,6 @@ export default function About() {
               <h3 className="text-xl font-bold mb-3 text-neutral-900">Atendimento Especializado</h3>
               <p className="text-neutral-600">
                 Consultores treinados para ajudar na melhor escolha
-              </p>
-            </div>
-
-            {/* Satisfação Garantida */}
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-purple-100 rounded-3xl mb-6 mx-auto">
-                <Star className="w-10 h-10 text-blue-700" />
-              </div>
-              <h3 className="text-xl font-bold mb-3 text-neutral-900">Garantia Estendida</h3>
-              <p className="text-neutral-600">
-                Produtos com garantia de qualidade e durabilidade
               </p>
             </div>
           </div>
@@ -154,7 +143,7 @@ export default function About() {
               <div className="text-neutral-700 font-medium">Anos de Experiência</div>
             </div>
             <div>
-              <div className="text-5xl font-bold text-blue-700 mb-2">2.5k+</div>
+              <div className="text-5xl font-bold text-blue-700 mb-2">1.5k+</div>
               <div className="text-neutral-700 font-medium">Clientes Satisfeitos</div>
             </div>
             <div>
